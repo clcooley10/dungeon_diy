@@ -1,0 +1,9 @@
+{
+  "parent": "dungeon_diy:block/dungeon_teleporter_key",
+  "textures": {
+    "key_holder": "minecraft:block/iron_bars",
+    "portal": "dungeon_diy:block/dungeon_portal_black",
+    "obsidian": "minecraft:block/obsidian",
+    "particle": "minecraft:block/obsidian"
+  }
+}

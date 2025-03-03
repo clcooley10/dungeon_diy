@@ -1,0 +1,57 @@
+[01Mar2025 19:32:15.598] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgedatauserdev, --assetIndex, 1.19, --assetsDir, /home/ccooley/.gradle/caches/forge_gradle/assets, --gameDir, ., --fml.forgeVersion, 43.4.12, --fml.mcVersion, 1.19.2, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20220805.130853, --mod, dungeon_diy, --all, --output, /home/ccooley/minecraft/modding/dungeon_diy/src/generated/resources, --existing, /home/ccooley/minecraft/modding/dungeon_diy/src/main/resources]
+[01Mar2025 19:32:15.603] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.8 by Oracle Corporation; OS Linux arch amd64 version 6.8.0-53-generic
+[01Mar2025 19:32:15.769] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/home/ccooley/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23115!/ Service=ModLauncher Env=CLIENT
+[01Mar2025 19:32:16.186] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file /home/ccooley/.gradle/caches/modules-2/files-2.1/net.minecraftforge/javafmllanguage/1.19.2-43.4.12/1bfcf07f9a347eb709cc926aa4ab0ad7ef1a8284/javafmllanguage-1.19.2-43.4.12.jar is missing mods.toml file
+[01Mar2025 19:32:16.188] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file /home/ccooley/.gradle/caches/modules-2/files-2.1/net.minecraftforge/lowcodelanguage/1.19.2-43.4.12/47021c70f232eebe906ed747b3c7584f92e64a5/lowcodelanguage-1.19.2-43.4.12.jar is missing mods.toml file
+[01Mar2025 19:32:16.190] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file /home/ccooley/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mclanguage/1.19.2-43.4.12/9a68b493dc469af43f1caf5c46a51e01ee263d4f/mclanguage-1.19.2-43.4.12.jar is missing mods.toml file
+[01Mar2025 19:32:16.193] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file /home/ccooley/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlcore/1.19.2-43.4.12/147b06741152d163623bad8e89485cb1735cd8ec/fmlcore-1.19.2-43.4.12.jar is missing mods.toml file
+[01Mar2025 19:32:16.287] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: No dependencies to load found. Skipping!
+[01Mar2025 19:32:17.943] [main/INFO] [mixin/]: Compatibility level set to JAVA_17
+[01Mar2025 19:32:17.947] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgedatauserdev' with arguments [--gameDir, ., --assetsDir, /home/ccooley/.gradle/caches/forge_gradle/assets, --assetIndex, 1.19, --mod, dungeon_diy, --all, --output, /home/ccooley/minecraft/modding/dungeon_diy/src/generated/resources, --existing, /home/ccooley/minecraft/modding/dungeon_diy/src/main/resources]
+[01Mar2025 19:32:18.332] [main/INFO] [net.minecraftforge.data.loading.DatagenModLoader/]: Initializing Data Gatherer for mods [dungeon_diy]
+[01Mar2025 19:32:21.718] [main/INFO] [net.minecraft.util.datafix.DataFixers/]: Building unoptimized datafixer
+[01Mar2025 19:32:23.429] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 43.4.12, for MC 1.19.2 with MCP 20220805.130853
+[01Mar2025 19:32:23.433] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v43.4.12 Initialized
+[01Mar2025 19:32:24.133] [main/WARN] [net.minecraft.server.packs.VanillaPackResources/]: Assets URL 'union:/home/ccooley/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.19.2-43.4.12_mapped_parchment_2022.11.27-1.19.2/forge-1.19.2-43.4.12_mapped_parchment_2022.11.27-1.19.2-recomp.jar%23179!/assets/.mcassetsroot' uses unexpected schema
+[01Mar2025 19:32:24.134] [main/WARN] [net.minecraft.server.packs.VanillaPackResources/]: Assets URL 'union:/home/ccooley/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.19.2-43.4.12_mapped_parchment_2022.11.27-1.19.2/forge-1.19.2-43.4.12_mapped_parchment_2022.11.27-1.19.2-recomp.jar%23179!/data/.mcassetsroot' uses unexpected schema
+[01Mar2025 19:32:24.167] [main/FATAL] [mixin/]: Mixin apply failed patchouli_xplat.mixins.json:client.AccessorScreen -> net.minecraft.client.gui.screens.Screen: org.spongepowered.asm.mixin.gen.throwables.InvalidAccessorException No candidates were found matching f_169369_:Ljava/util/List; in net/minecraft/client/gui/screens/Screen for patchouli_xplat.mixins.json:client.AccessorScreen->@Accessor[FIELD_GETTER]::getRenderables()Ljava/util/List; [INJECT Applicator Phase -> patchouli_xplat.mixins.json:client.AccessorScreen -> Apply Accessors ->  -> Locate -> patchouli_xplat.mixins.json:client.AccessorScreen->@Accessor[FIELD_GETTER]::getRenderables()Ljava/util/List;]
+org.spongepowered.asm.mixin.gen.throwables.InvalidAccessorException: No candidates were found matching f_169369_:Ljava/util/List; in net/minecraft/client/gui/screens/Screen for patchouli_xplat.mixins.json:client.AccessorScreen->@Accessor[FIELD_GETTER]::getRenderables()Ljava/util/List; [INJECT Applicator Phase -> patchouli_xplat.mixins.json:client.AccessorScreen -> Apply Accessors ->  -> Locate -> patchouli_xplat.mixins.json:client.AccessorScreen->@Accessor[FIELD_GETTER]::getRenderables()Ljava/util/List;]
+	at org.spongepowered.asm.mixin.gen.AccessorInfo.findTarget(AccessorInfo.java:518) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.gen.AccessorInfo.findTargetField(AccessorInfo.java:501) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.gen.AccessorInfo.locate(AccessorInfo.java:475) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinTargetContext.generateAccessors(MixinTargetContext.java:1389) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinApplicatorStandard.applyAccessors(MixinApplicatorStandard.java:1060) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinApplicatorStandard.applyMixin(MixinApplicatorStandard.java:398) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinApplicatorStandard.apply(MixinApplicatorStandard.java:325) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.TargetClassContext.apply(TargetClassContext.java:383) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.TargetClassContext.applyMixins(TargetClassContext.java:365) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinProcessor.applyMixins(MixinProcessor.java:363) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.mixin.transformer.MixinTransformer.transformClass(MixinTransformer.java:250) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.service.modlauncher.MixinTransformationHandler.processClass(MixinTransformationHandler.java:131) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at org.spongepowered.asm.launch.MixinLaunchPluginLegacy.processClass(MixinLaunchPluginLegacy.java:131) ~[mixin-0.8.5.jar:0.8.5+Jenkins-b310.git-155314e6e91465dad727e621a569906a410cd6f4]
+	at cpw.mods.modlauncher.serviceapi.ILaunchPluginService.processClassWithFlags(ILaunchPluginService.java:156) ~[modlauncher-10.0.9.jar:10.0.9+10.0.9+main.dcd20f30]
+	at cpw.mods.modlauncher.LaunchPluginHandler.offerClassNodeToPlugins(LaunchPluginHandler.java:88) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.ClassTransformer.transform(ClassTransformer.java:120) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.TransformingClassLoader.maybeTransformClassBytes(TransformingClassLoader.java:50) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.readerToClass(ModuleClassLoader.java:113) ~[securejarhandler-2.1.4.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.lambda$findClass$15(ModuleClassLoader.java:219) ~[securejarhandler-2.1.4.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.loadFromModule(ModuleClassLoader.java:229) ~[securejarhandler-2.1.4.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.findClass(ModuleClassLoader.java:219) ~[securejarhandler-2.1.4.jar:?]
+	at cpw.mods.cl.ModuleClassLoader.loadClass(ModuleClassLoader.java:135) ~[securejarhandler-2.1.4.jar:?]
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:520) ~[?:?]
+	at net.minecraftforge.common.data.ExistingFileHelper.<init>(ExistingFileHelper.java:101) ~[forge-1.19.2-43.4.12_mapped_parchment_2022.11.27-1.19.2-recomp.jar:?]
+	at net.minecraftforge.data.loading.DatagenModLoader.begin(DatagenModLoader.java:42) ~[forge-1.19.2-43.4.12_mapped_parchment_2022.11.27-1.19.2-recomp.jar:?]
+	at net.minecraft.data.Main.main(Main.java:76) ~[forge-1.19.2-43.4.12_mapped_parchment_2022.11.27-1.19.2-recomp.jar:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:568) ~[?:?]
+	at net.minecraftforge.fml.loading.targets.ForgeDataUserdevLaunchHandler.lambda$launchService$0(ForgeDataUserdevLaunchHandler.java:28) ~[fmlloader-1.19.2-43.4.12.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?]

@@ -1,0 +1,23 @@
+{
+  "credit": "Made with Blockbench",
+  "textures": {
+    "base": "dungeon_diy:block/layout_block_red",
+    "one": "dungeon_diy:block/layout_block_red_one",
+    "door": "dungeon_diy:block/layout_block_red_door",
+    "particle": "dungeon_diy:block/layout_block_red"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 16, 16],
+      "faces": {
+        "north": {"uv": [0, 0, 16, 16], "texture": "#door"},
+        "east": {"uv": [0, 0, 16, 16], "rotation": 90, "texture": "#one"},
+        "south": {"uv": [0, 0, 16, 16], "texture": "#base"},
+        "west": {"uv": [0, 0, 16, 16], "rotation": 270, "texture": "#one"},
+        "up": {"uv": [0, 0, 16, 16], "texture": "#one"},
+        "down": {"uv": [0, 0, 16, 16], "rotation": 180, "texture": "#one"}
+      }
+    }
+  ]
+}

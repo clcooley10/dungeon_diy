@@ -1,0 +1,17 @@
+{
+  "variants": {
+    "ddiy_has_eye=false": [
+      { "model": "dungeon_diy:block/dungeon_teleporter"}
+    ],
+    "ddiy_has_eye=true": [
+      { "model": "dungeon_diy:block/dungeon_teleporter_key_black"},
+      { "model": "dungeon_diy:block/dungeon_teleporter_key_blue"},
+      { "model": "dungeon_diy:block/dungeon_teleporter_key_green"},
+      { "model": "dungeon_diy:block/dungeon_teleporter_key_pink"},
+      { "model": "dungeon_diy:block/dungeon_teleporter_key_red"},
+      { "model": "dungeon_diy:block/dungeon_teleporter_key_red_black"},
+      { "model": "dungeon_diy:block/dungeon_teleporter_key_yellow"},
+      { "model": "dungeon_diy:block/dungeon_teleporter_key_purple"}
+    ]
+  }
+}

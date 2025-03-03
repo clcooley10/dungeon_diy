@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "ddiy_entrance=true": {
+      "model": "dungeon_diy:block/layout_block_teleporter_in"
+    },
+    "ddiy_entrance=false": {
+      "model": "dungeon_diy:block/layout_block_teleporter_out"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "dungeon_diy:block/layout_block_base"
+    }
+  }
+}

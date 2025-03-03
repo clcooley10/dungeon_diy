@@ -1,0 +1,22 @@
+{
+  "credit": "Made with Blockbench",
+  "textures": {
+    "door": "dungeon_diy:block/layout_block_green_door",
+    "hall": "dungeon_diy:block/layout_block_green_hall",
+    "particle": "dungeon_diy:block/layout_block_green"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 16, 16],
+      "faces": {
+        "north": {"uv": [0, 0, 16, 16], "texture": "#door"},
+        "east": {"uv": [0, 0, 16, 16], "rotation": 90, "texture": "#hall"},
+        "south": {"uv": [0, 0, 16, 16], "texture": "#door"},
+        "west": {"uv": [0, 0, 16, 16], "rotation": 90, "texture": "#hall"},
+        "up": {"uv": [0, 0, 16, 16], "texture": "#hall"},
+        "down": {"uv": [0, 0, 16, 16], "texture": "#hall"}
+      }
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "ddiy_has_eye=false": {
+      "model": "dungeon_diy:block/dungeon_teleporter_old"
+    },
+    "ddiy_has_eye=true": {
+      "model": "dungeon_diy:block/dungeon_teleporter_key_old"
+    }
+  }
+}

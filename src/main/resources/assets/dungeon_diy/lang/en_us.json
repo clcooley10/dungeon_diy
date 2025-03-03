@@ -1,0 +1,27 @@
+{
+  "itemGroup.dungeon_diy": "Dungeon DIY",
+  "item.dungeon_diy.overloaded_eye": "Overloaded Eye of Ender",
+
+  "block.dungeon_diy.drafting_table": "Drafting Table",
+  "block.dungeon_diy.drafting_table_old": "Drafting Table ALT",
+  "block.dungeon_diy.layout_block_white": "White Layout Block",
+  "block.dungeon_diy.layout_block_orange": "Orange Layout Block",
+  "block.dungeon_diy.layout_block_magenta": "Magenta Layout Block",
+  "block.dungeon_diy.layout_block_light_blue": "Light Blue Layout Block",
+  "block.dungeon_diy.layout_block_yellow": "Yellow Layout Block",
+  "block.dungeon_diy.layout_block_lime": "Lime Layout Block",
+  "block.dungeon_diy.layout_block_pink": "Pink Layout Block",
+  "block.dungeon_diy.layout_block_gray": "Gray Layout Block",
+  "block.dungeon_diy.layout_block_light_gray": "Light Gray Layout Block",
+  "block.dungeon_diy.layout_block_cyan": "Cyan Layout Block",
+  "block.dungeon_diy.layout_block_purple": "Purple Layout Block",
+  "block.dungeon_diy.layout_block_blue": "Blue Layout Block",
+  "block.dungeon_diy.layout_block_brown": "Brown Layout Block",
+  "block.dungeon_diy.layout_block_green": "Green Layout Block",
+  "block.dungeon_diy.layout_block_red": "Red Layout Block",
+  "block.dungeon_diy.layout_block_black": "Black Layout Block",
+  "block.dungeon_diy.layout_block_teleporter": "Teleporter Layout Block",
+  "block.dungeon_diy.dungeon_teleporter": "Dungeon Teleporter Pad",
+  "block.dungeon_diy.dungeon_teleporter_old": "Dungeon Teleporter Pad ALT"
+
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "dungeon_diy:block/drafting_table_old",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "dungeon_diy:block/drafting_table_old"
+    },
+    "facing=south": {
+      "model": "dungeon_diy:block/drafting_table_old",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "dungeon_diy:block/drafting_table_old",
+      "y": 270
+    }
+  }
+}

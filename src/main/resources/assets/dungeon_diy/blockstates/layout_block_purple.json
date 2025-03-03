@@ -1,0 +1,69 @@
+{
+  "variants": {
+    "ddiy_door_north=false,ddiy_door_east=false,ddiy_door_south=false,ddiy_door_west=false": {
+      "model": "dungeon_diy:block/layout_block_purple",
+      "y": 0
+    },
+
+    "ddiy_door_north=true,ddiy_door_east=false,ddiy_door_south=false,ddiy_door_west=false": {
+      "model": "dungeon_diy:block/layout_block_purple_one",
+      "y": 0
+    },
+    "ddiy_door_north=false,ddiy_door_east=true,ddiy_door_south=false,ddiy_door_west=false": {
+      "model": "dungeon_diy:block/layout_block_purple_one",
+      "y": 90
+    },
+    "ddiy_door_north=false,ddiy_door_east=false,ddiy_door_south=true,ddiy_door_west=false": {
+      "model": "dungeon_diy:block/layout_block_purple_one",
+      "y": 180
+    },
+    "ddiy_door_north=false,ddiy_door_east=false,ddiy_door_south=false,ddiy_door_west=true": {
+      "model": "dungeon_diy:block/layout_block_purple_one",
+      "y": 270
+    },
+
+    "ddiy_door_north=true,ddiy_door_east=true,ddiy_door_south=false,ddiy_door_west=false": {
+      "model": "dungeon_diy:block/layout_block_purple_corner",
+      "y": 0
+    },
+    "ddiy_door_north=false,ddiy_door_east=true,ddiy_door_south=true,ddiy_door_west=false": {
+      "model": "dungeon_diy:block/layout_block_purple_corner",
+      "y": 90
+    },
+    "ddiy_door_north=false,ddiy_door_east=false,ddiy_door_south=true,ddiy_door_west=true": {
+      "model": "dungeon_diy:block/layout_block_purple_corner",
+      "y": 180
+    },
+    "ddiy_door_north=true,ddiy_door_east=false,ddiy_door_south=false,ddiy_door_west=true": {
+      "model": "dungeon_diy:block/layout_block_purple_corner",
+      "y": 270
+    },
+    "ddiy_door_north=true,ddiy_door_east=false,ddiy_door_south=true,ddiy_door_west=false": {
+      "model": "dungeon_diy:block/layout_block_purple_hall",
+      "y": 0
+    },
+    "ddiy_door_north=false,ddiy_door_east=true,ddiy_door_south=false,ddiy_door_west=true": {
+      "model": "dungeon_diy:block/layout_block_purple_hall",
+      "y": 90
+    },
+
+    "ddiy_door_north=true,ddiy_door_east=true,ddiy_door_south=false,ddiy_door_west=true": {
+      "model": "dungeon_diy:block/layout_block_purple_three",
+      "y": 0
+    },"ddiy_door_north=true,ddiy_door_east=true,ddiy_door_south=true,ddiy_door_west=false": {
+      "model": "dungeon_diy:block/layout_block_purple_three",
+      "y": 90
+    },"ddiy_door_north=false,ddiy_door_east=true,ddiy_door_south=true,ddiy_door_west=true": {
+      "model": "dungeon_diy:block/layout_block_purple_three",
+      "y": 180
+    },"ddiy_door_north=true,ddiy_door_east=false,ddiy_door_south=true,ddiy_door_west=true": {
+      "model": "dungeon_diy:block/layout_block_purple_three",
+      "y": 270
+    },
+
+    "ddiy_door_north=true,ddiy_door_east=true,ddiy_door_south=true,ddiy_door_west=true": {
+      "model": "dungeon_diy:block/layout_block_purple_four",
+      "y": 0
+    }
+  }
+}

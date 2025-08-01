@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "dungeon_diy:blue_amethyst_cluster",
+    "dungeon_diy:blue_small_amethyst_bud",
+    "dungeon_diy:blue_medium_amethyst_bud",
+    "dungeon_diy:blue_large_amethyst_bud",
+    "dungeon_diy:blue_amethyst_block",
+    "dungeon_diy:blue_budding_amethyst"
+  ]
+}

@@ -1,6 +1,6 @@
 package net.drDooley.dungeon_diy.networking;
 
-import net.drDooley.dungeon_diy.block.DungeonTeleporterEntity;
+import net.drDooley.dungeon_diy.unused.DungeonTeleporterEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;

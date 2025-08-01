@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "dungeon_diy:block/loot_chest" }
+  }
+}

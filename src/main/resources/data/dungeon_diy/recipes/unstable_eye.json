@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    "CEC",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:chorus_fruit"
+    },
+    "E": {
+      "item": "dungeon_diy:reactive_eye"
+    }
+  },
+  "result": {
+    "item": "dungeon_diy:unstable_eye"
+  }
+}

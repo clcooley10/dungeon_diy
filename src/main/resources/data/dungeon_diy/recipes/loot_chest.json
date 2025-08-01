@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SSS",
+    "SES",
+    "SSS"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:spruce_planks"
+    },
+    "E": {
+      "item": "dungeon_diy:reactive_eye"
+    }
+  },
+  "result": {
+    "item": "dungeon_diy:loot_chest"
+  }
+}

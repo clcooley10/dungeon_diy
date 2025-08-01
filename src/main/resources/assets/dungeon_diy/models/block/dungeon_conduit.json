@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "dungeon_diy:block/dungeon_conduit_top",
+    "side": "dungeon_diy:block/dungeon_conduit_side",
+    "top": "dungeon_diy:block/dungeon_conduit_top"
+  }
+}

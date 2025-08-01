@@ -1,0 +1,6 @@
+{
+  "parent": "dungeon_diy:block/chest_template",
+  "textures": {
+    "chest": "dungeon_diy:entity/chest/loot_chest"
+  }
+}

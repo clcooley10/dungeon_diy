@@ -1,5 +1,34 @@
 {
   "itemGroup.dungeon_diy": "Dungeon DIY",
+
+  "block.dungeon_diy.blue_amethyst_block": "Blue Amethyst Block",
+  "block.dungeon_diy.blue_budding_amethyst": "Blue Budding Amethyst",
+  "block.dungeon_diy.blue_amethyst_cluster": "Blue Amethyst Cluster",
+  "block.dungeon_diy.blue_large_amethyst_bud": "Large Blue Amethyst Bud",
+  "block.dungeon_diy.blue_medium_amethyst_bud": "Medium Blue Amethyst Bud",
+  "block.dungeon_diy.blue_small_amethyst_bud": "Small Blue Amethyst Bud",
+  "block.dungeon_diy.loot_chest": "Loot Chest",
+  "block.dungeon_diy.dungeon_conduit": "Dungeon Conduit",
+  "block.dungeon_diy.gong": "Gong",
+  "block.dungeon_diy.iron_requirement_door": "Iron Door of Requirement",
+
+  "item.dungeon_diy.reactive_eye": "Reactive Eye of Ender",
+  "item.dungeon_diy.reactive_eye.clearAll": "Broke all connections with this Eye",
+  "item.dungeon_diy.reactive_eye.clear": "Broke connection with %s",
+  "item.dungeon_diy.reactive_eye.create": "Created connection with %s",
+  "item.dungeon_diy.reactive_eye.tooltip.count": "Active dungeon connections: %s",
+  "item.dungeon_diy.reactive_eye.tooltip.idle": "The Eye is untethered...",
+  "item.dungeon_diy.unstable_eye": "Unstable Eye of Ender",
+
+  "gui.dungeon_diy.loot_chest": "Loot Chest",
+  "gui.dungeon_diy.loot_chest.pools": "Pools",
+  "gui.dungeon_diy.loot_chest.pool_items": "Pool Items",
+  "gui.dungeon_diy.loot_chest.pool_config": "Pool Config",
+  "gui.dungeon_diy.requirement_door": "Door of Requirement",
+
+  "message.dungeon_diy.requirement_door.locked": "The Door of Requirement is unsatisfied with your contributions.",
+
+  "#": "OLD STUFF BELOW",
   "item.dungeon_diy.overloaded_eye": "Overloaded Eye of Ender",
 
   "block.dungeon_diy.drafting_table": "Drafting Table",

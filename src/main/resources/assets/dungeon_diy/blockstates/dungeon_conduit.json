@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "active=true,eye=false": {
+      "model": "dungeon_diy:block/dungeon_conduit_active"
+    },
+    "active=true,eye=true": {
+      "model": "dungeon_diy:block/dungeon_conduit_active"
+    },
+    "active=false,eye=false": {
+      "model": "dungeon_diy:block/dungeon_conduit"
+    },
+    "active=false,eye=true": {
+      "model": "dungeon_diy:block/dungeon_conduit_has_eye"
+    }
+  }
+}

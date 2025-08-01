@@ -1,0 +1,11 @@
+{
+  "parent": "dungeon_diy:item/blue_amethyst_bud",
+  "textures": {
+    "layer0": "dungeon_diy:block/blue_medium_amethyst_bud"
+  },
+  "display": {
+    "fixed": {
+      "translation": [ 0, 6, 0 ]
+    }
+  }
+}

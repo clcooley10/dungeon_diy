@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "dungeon_diy:block/blue_small_amethyst_bud",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "dungeon_diy:block/blue_small_amethyst_bud",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "dungeon_diy:block/blue_small_amethyst_bud",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "dungeon_diy:block/blue_small_amethyst_bud",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "dungeon_diy:block/blue_small_amethyst_bud"
+    },
+    "facing=west": {
+      "model": "dungeon_diy:block/blue_small_amethyst_bud",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

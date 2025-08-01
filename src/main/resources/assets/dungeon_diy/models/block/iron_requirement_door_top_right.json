@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/door_top_right",
+  "render_type": "cutout",
+  "textures": {
+    "bottom": "dungeon_diy:block/iron_requirement_door_bottom",
+    "top": "dungeon_diy:block/iron_requirement_door_top"
+  }
+}

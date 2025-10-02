@@ -1,6 +1,14 @@
 {
   "itemGroup.dungeon_diy": "Dungeon DIY",
 
+  "block.dungeon_diy.dungeon_manager": "Dungeon Manager",
+
+  "item.dungeon_diy.dungeon_rulebook": "Dungeon Rulebook",
+
+
+
+
+
   "block.dungeon_diy.blue_amethyst_block": "Blue Amethyst Block",
   "block.dungeon_diy.blue_budding_amethyst": "Blue Budding Amethyst",
   "block.dungeon_diy.blue_amethyst_cluster": "Blue Amethyst Cluster",

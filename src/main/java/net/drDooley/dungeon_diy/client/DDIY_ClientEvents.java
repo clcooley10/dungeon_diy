@@ -2,6 +2,7 @@ package net.drDooley.dungeon_diy.client;
 
 import net.drDooley.dungeon_diy.DDIY;
 import net.drDooley.dungeon_diy.block.DDIY_Blocks;
+import net.drDooley.dungeon_diy.client.render.DungeonManagerRenderer;
 import net.drDooley.dungeon_diy.unused.DungeonTeleporterBlockEntityRenderer;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.resources.ResourceLocation;
@@ -17,6 +18,7 @@ public class DDIY_ClientEvents {
     @SubscribeEvent
     public static void registerRenderers(final EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(DDIY_Blocks.DUNGEON_TELEPORTER_ENTITY.get(), DungeonTeleporterBlockEntityRenderer::new);
+        event.registerBlockEntityRenderer(DDIY_Blocks.DUNGEON_MANAGER_ENTITY.get(), DungeonManagerRenderer::new);
     }
 
     @SubscribeEvent

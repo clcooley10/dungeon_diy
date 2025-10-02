@@ -30,6 +30,9 @@ public class DDIY_Blocks {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, DDIY.MODID);
 
     // Blocks
+    public static final RegistryObject<Block> DUNGEON_MANAGER = registerBlock("dungeon_manager",
+            () -> new DungeonManagerBlock(BlockBehaviour.Properties.of(Material.STONE, MaterialColor.COLOR_GRAY).strength(5.0F, 1200.0F)), DDIY_CreativeTab.DDIY_CREATIVE);
+
     public static final RegistryObject<Block> BLUE_AMETHYST_BLOCK = registerBlock("blue_amethyst_block",
             () -> new AmethystBlock(BlockBehaviour.Properties.of(Material.AMETHYST, MaterialColor.COLOR_BLUE)
                     .strength(1.5F)
@@ -130,6 +133,10 @@ public class DDIY_Blocks {
                     .lightLevel((s) -> { return 10; })), DDIY_CreativeTab.DDIY_CREATIVE);
 
     // BlockEntities
+    public static final RegistryObject<BlockEntityType<DungeonManagerEntity>> DUNGEON_MANAGER_ENTITY = BLOCK_ENTITIES.register("dungeon_manager_entity",
+            () -> BlockEntityType.Builder.of(DungeonManagerEntity::new, DUNGEON_MANAGER.get()).build(null));
+
+
     public static final RegistryObject<BlockEntityType<BlueBuddingAmethystEntity>> BLUE_BUDDING_AMETHYST_ENTITY = BLOCK_ENTITIES.register("blue_budding_amethyst_entity",
             () -> BlockEntityType.Builder.of(BlueBuddingAmethystEntity::new, BLUE_BUDDING_AMETHYST.get()).build(null));
     public static final RegistryObject<BlockEntityType<BlueAmethystClusterEntity>> BLUE_AMETHYST_CLUSTER_ENTITY = BLOCK_ENTITIES.register("blue_amethyst_cluster_entity",

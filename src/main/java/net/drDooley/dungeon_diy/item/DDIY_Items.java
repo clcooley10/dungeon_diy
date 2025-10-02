@@ -12,6 +12,10 @@ import net.minecraftforge.registries.RegistryObject;
 public class DDIY_Items {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, DDIY.MODID);
 
+    public static final RegistryObject<Item> DUNGEON_RULEBOOK = ITEMS.register("dungeon_rulebook",
+            () -> new DungeonRulebook(new Item.Properties().rarity(Rarity.COMMON).tab(DDIY_CreativeTab.DDIY_CREATIVE)));
+
+
     public static final RegistryObject<Item> OVERLOADED_EYE = ITEMS.register("overloaded_eye",
             () -> new OverloadedEye(new Item.Properties().rarity(Rarity.COMMON).tab(DDIY_CreativeTab.DDIY_CREATIVE)));
 

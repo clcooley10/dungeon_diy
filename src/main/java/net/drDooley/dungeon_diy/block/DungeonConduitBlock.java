@@ -62,12 +62,11 @@ public class DungeonConduitBlock extends BaseEntityBlock {
     private void dropEye(Level pLevel, BlockPos pPos) {
         if (!pLevel.isClientSide) {
             BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-            if (blockentity instanceof DungeonConduitEntity) {
-                DungeonConduitEntity jukeboxblockentity = (DungeonConduitEntity)blockentity;
-                ItemStack itemstack = jukeboxblockentity.getEye();
+            if (blockentity instanceof DungeonConduitEntity entity) {
+                ItemStack itemstack = entity.getEye();
                 if (!itemstack.isEmpty()) {
                     pLevel.levelEvent(1010, pPos, 0);
-                    jukeboxblockentity.removedEye();
+                    entity.removedEye();
                     float f = 0.7F;
                     double d0 = (double)(pLevel.random.nextFloat() * 0.7F) + (double)0.15F;
                     double d1 = (double)(pLevel.random.nextFloat() * 0.7F) + (double)0.060000002F + 0.6D;

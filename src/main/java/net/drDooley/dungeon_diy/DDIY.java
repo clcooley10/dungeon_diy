@@ -6,11 +6,8 @@ import net.drDooley.dungeon_diy.client.render.LootChestRenderer;
 import net.drDooley.dungeon_diy.dimension.DDIY_Dimensions;
 import net.drDooley.dungeon_diy.item.DDIY_Items;
 import net.drDooley.dungeon_diy.networking.DDIY_Packets;
-import net.drDooley.dungeon_diy.screen.DDIY_Menus;
-import net.drDooley.dungeon_diy.screen.RequirementDoorActiveScreen;
-import net.drDooley.dungeon_diy.screen.RequirementDoorEditScreen;
+import net.drDooley.dungeon_diy.screen.*;
 import net.drDooley.dungeon_diy.unused.LayoutBlockScreen;
-import net.drDooley.dungeon_diy.screen.LootChestScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.world.item.*;
@@ -61,11 +58,12 @@ public class DDIY {
         public static void onClientSetup(FMLClientSetupEvent event) {
 
             MenuScreens.register(DDIY_Menus.LAYOUT_BLOCK_MENU.get(), LayoutBlockScreen::new);
-            MenuScreens.register(DDIY_Menus.LOOT_CHEST_EDIT_MENU.get(), LootChestScreen::new);
+            MenuScreens.register(DDIY_Menus.LOOT_CHEST_EDIT_MENU.get(), LootChestEditScreen::new);
+            MenuScreens.register(DDIY_Menus.LOOT_CHEST_ACTIVE_MENU.get(), LootChestActiveScreen::new);
             MenuScreens.register(DDIY_Menus.REQUIREMENT_DOOR_EDIT_MENU.get(), RequirementDoorEditScreen::new);
             MenuScreens.register(DDIY_Menus.REQUIREMENT_DOOR_ACTIVE_MENU.get(), RequirementDoorActiveScreen::new);
 
-            BlockEntityRenderers.register(DDIY_Blocks.LOOT_CHEST_ENTITY.get(), LootChestRenderer::new);
+            //BlockEntityRenderers.register(DDIY_Blocks.LOOT_CHEST_ENTITY.get(), LootChestRenderer::new);
         }
     }
 }

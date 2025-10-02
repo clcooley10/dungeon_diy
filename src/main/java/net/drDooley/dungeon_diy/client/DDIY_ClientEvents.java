@@ -1,10 +1,10 @@
 package net.drDooley.dungeon_diy.client;
 
 import net.drDooley.dungeon_diy.DDIY;
-import net.drDooley.dungeon_diy.block.ChestTypes;
 import net.drDooley.dungeon_diy.block.DDIY_Blocks;
 import net.drDooley.dungeon_diy.unused.DungeonTeleporterBlockEntityRenderer;
 import net.minecraft.client.renderer.Sheets;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
@@ -23,8 +23,6 @@ public class DDIY_ClientEvents {
     public static void onStitch(TextureStitchEvent.Pre event) {
         if (!event.getAtlas().location().equals(Sheets.CHEST_SHEET)) { return; }
 
-        for (ChestTypes type : ChestTypes.values()) {
-            event.addSprite(type.getTextureId());
-        }
+        event.addSprite(new ResourceLocation(DDIY.MODID, "entity/chest/loot_chest"));
     }
 }

@@ -27,7 +27,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-public class RequirementDoorEntity extends BlockEntity implements MenuProvider {
+public class RequirementDoorEntity extends BlockEntity implements MenuProvider, DungeonLink {
+    private DungeonConduitEntity conduit;
     private final ItemStackHandler editItemHandler = new ItemStackHandler(10) {
         @Override
         protected void onContentsChanged(int slot) {
@@ -156,6 +157,11 @@ public class RequirementDoorEntity extends BlockEntity implements MenuProvider {
 //        } else {
 //            return new RequirementDoorEditMenu(pContainerId, pPlayerInventory, this);
 //        }
+    }
+
+    @Override
+    public void registerConduit(BlockPos pos) {
+        conduit = (DungeonConduitEntity) level.getBlockEntity(pos);
     }
 
 //    public static void tick(Level level, BlockPos pos, BlockState state, RequirementDoorEntity pEntity) {

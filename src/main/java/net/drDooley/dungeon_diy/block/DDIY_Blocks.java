@@ -5,6 +5,9 @@ import net.drDooley.dungeon_diy.block.entity.*;
 import net.drDooley.dungeon_diy.item.DDIY_CreativeTab;
 import net.drDooley.dungeon_diy.item.DDIY_Items;
 import net.drDooley.dungeon_diy.unused.*;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
@@ -59,7 +62,7 @@ public class DDIY_Blocks {
                     .lightLevel((light) -> { return 1; })), DDIY_CreativeTab.DDIY_CREATIVE);
 
     public static final RegistryObject<LootChestBlock> LOOT_CHEST = registerBlock("loot_chest",
-            () -> new LootChestBlock(BlockBehaviour.Properties.of(Material.WOOD).strength(2.5F).sound(SoundType.WOOD), ChestTypes.LOOT_CHEST), DDIY_CreativeTab.DDIY_CREATIVE);
+            () -> new LootChestBlock(BlockBehaviour.Properties.of(Material.WOOD).strength(2.5F).sound(SoundType.WOOD)), DDIY_CreativeTab.DDIY_CREATIVE);
 
     public static final RegistryObject<DungeonConduitBlock> DUNGEON_CONDUIT = registerBlock("dungeon_conduit",
             () -> new DungeonConduitBlock(BlockBehaviour.Properties.of(Material.STONE).strength(20F).sound(SoundType.STONE)
@@ -133,7 +136,7 @@ public class DDIY_Blocks {
             () -> BlockEntityType.Builder.of(BlueAmethystClusterEntity::new, BLUE_AMETHYST_CLUSTER.get()).build(null));
 
     public static final RegistryObject<BlockEntityType<LootChestEntity>> LOOT_CHEST_ENTITY = BLOCK_ENTITIES.register("loot_chest",
-            () -> BlockEntityType.Builder.of((pos, state) -> new LootChestEntity(pos, state, ChestTypes.LOOT_CHEST), LOOT_CHEST.get()).build(null));
+            () -> BlockEntityType.Builder.of(LootChestEntity::new, LOOT_CHEST.get()).build(null));
 
     public static final RegistryObject<BlockEntityType<DungeonConduitEntity>> DUNGEON_CONDUIT_ENTITY = BLOCK_ENTITIES.register("dungeon_conduit_entity",
             () -> BlockEntityType.Builder.of(DungeonConduitEntity::new, DUNGEON_CONDUIT.get()).build(null));
@@ -168,5 +171,10 @@ public class DDIY_Blocks {
     public static void register(IEventBus bus) {
         BLOCKS.register(bus);
         BLOCK_ENTITIES.register(bus);
+    }
+
+
+    public static class DDIY_Tags {
+        public static final TagKey<Block> DUNGEON_ACCEPTED = BlockTags.create(new ResourceLocation(DDIY.MODID, "dungeon_acceptable"));
     }
 }

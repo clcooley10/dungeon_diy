@@ -4,6 +4,7 @@ import net.drDooley.dungeon_diy.DDIY;
 import net.drDooley.dungeon_diy.block.DDIY_Blocks;
 import net.drDooley.dungeon_diy.block.DungeonConduitBlock;
 import net.drDooley.dungeon_diy.event.GongRungEvent;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -12,10 +13,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -33,18 +32,41 @@ public class DungeonConduitEntity extends BlockEntity {
     }
 
     public void updateLinkedBlocks(CompoundTag nbt) {
+        // Also handles sending our position to linked blocks so they can reach us later
         ArrayList<BlockPos> newBlocks = new ArrayList<>();
         ListTag blocksList = nbt.getList("linkedBlocks", Tag.TAG_COMPOUND);
         for (Tag t : blocksList) {
             CompoundTag block = (CompoundTag) t;
-            newBlocks.add(new BlockPos(block.getInt("x"), block.getInt("y"), block.getInt("z")));
+            BlockPos linkedPos = new BlockPos(block.getInt("x"), block.getInt("y"), block.getInt("z"));
+            newBlocks.add(linkedPos);
         }
+
         linkedBlocks = newBlocks;
         setChanged();
+
+        if (level != null) {
+            // Tell our linkedBlocks where to find us (not all blocks will have a method to handle this)
+            for (BlockPos memberPos : linkedBlocks) {
+                try {
+                    BlockEntity entity = level.getBlockEntity(memberPos);
+                    if (entity instanceof DungeonLink linkedEntity) {
+                        linkedEntity.registerConduit(this.worldPosition);
+                    }
+                } catch (NullPointerException ignored) { }
+            }
+        }
     }
 
-    public ArrayList<BlockPos> getLinkedBlocks() {
-        return linkedBlocks;
+    public ArrayList<BlockPos> getLootSources() {
+        ArrayList<BlockPos> ret = new ArrayList<BlockPos>();
+        for (BlockPos pos : linkedBlocks) {
+            try {
+                if (level.getBlockState(pos).is(Tags.Blocks.CHESTS)) {
+                    ret.add(pos);
+                }
+            } catch (NullPointerException ignored) {}
+        }
+        return ret;
     }
 
     // Jukebox and RecordItem for handling Eye
@@ -54,12 +76,6 @@ public class DungeonConduitEntity extends BlockEntity {
 
         if (pTag.contains("reactiveEye", Tag.TAG_COMPOUND)) {
             this.setEye(ItemStack.of(pTag.getCompound("reactiveEye")));
-        }
-
-        ListTag blocksList = pTag.getList("linkedBlocks", Tag.TAG_COMPOUND);
-        for (Tag t : blocksList) {
-            CompoundTag block = (CompoundTag) t;
-            linkedBlocks.add(new BlockPos(block.getInt("x"), block.getInt("y"), block.getInt("z")));
         }
     }
 

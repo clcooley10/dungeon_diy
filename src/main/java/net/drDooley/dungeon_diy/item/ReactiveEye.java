@@ -36,12 +36,20 @@ public class ReactiveEye extends Item {
     @Override
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
         // If we didn't click a block or the block isn't part of the mod, exit early.
-        if (context.getLevel().isClientSide) { return InteractionResult.SUCCESS; }
+        if (context.getLevel().isClientSide) { return InteractionResult.PASS; }
+
+        //TODO: Temporary. Accept all blocks.
+        // We need vanilla chests to be included so that loot chests can automatically source them.
+        // Later testing will be required to check how best to scale down from All blocks to just chests.
+        // Does this include anything with an ItemHandler? Anything with the Forge Chests Tag?
+
         BlockPos clickedPos = context.getClickedPos();
         BlockState bs = context.getLevel().getBlockState(clickedPos);
         Block block = bs.getBlock();
+        /*
         ResourceLocation blockName = ForgeRegistries.BLOCKS.getKey(block);
         if (!blockName.getNamespace().equals(DDIY.MODID)) { return super.onItemUseFirst(stack, context); }
+         */
         // Exception to the above rule-- The Dungeon Conduit has no reason to be in the list
         // In fact, we want to avoid it. Right click should insert the Eye
         if (block instanceof DungeonConduitBlock) { return super.onItemUseFirst(stack, context); }

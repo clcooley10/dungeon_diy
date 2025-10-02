@@ -27,6 +27,12 @@ public class DDIY_Packets {
                 .encoder(ItemStackSync_S2C::toBytes)
                 .consumerMainThread(ItemStackSync_S2C::handle)
                 .add();
+
+        net.messageBuilder(InitLootChest_S2C.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(InitLootChest_S2C::new)
+                .encoder(InitLootChest_S2C::toBytes)
+                .consumerMainThread(InitLootChest_S2C::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message) {

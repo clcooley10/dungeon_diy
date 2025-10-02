@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
+import net.drDooley.dungeon_diy.DDIY;
 import net.drDooley.dungeon_diy.block.LootChestBlock;
 import net.drDooley.dungeon_diy.block.entity.LootChestEntity;
 import net.minecraft.client.model.geom.ModelLayers;
@@ -17,6 +18,7 @@ import net.minecraft.client.renderer.blockentity.BrightnessCombiner;
 import net.minecraft.client.renderer.blockentity.ChestRenderer;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChestBlock;
@@ -59,16 +61,15 @@ public class LootChestRenderer<T extends LootChestEntity & LidBlockEntity> exten
 //                neighborCombineResult = DoubleBlockCombiner.Combiner::acceptNone;
 //            }
 
-            float openness = neighborCombineResult.<Float2FloatFunction>apply(LootChestBlock.opennessCombiner(lootEntity)).get(tickDelta);
-            openness = 1.0F - openness;
-            openness = 1.0F - openness * openness * openness;
+            //float openness = neighborCombineResult.<Float2FloatFunction>apply(LootChestBlock.opennessCombiner(lootEntity)).get(tickDelta);
+            float openness = 0f;
 
             int brightness = neighborCombineResult.<Int2IntFunction>apply(new BrightnessCombiner<>()).applyAsInt(light);
 
             //boolean trapped = entity instanceof TrappedLootChestEntity;
             boolean trapped = false;
 
-            Material material = new Material(Sheets.CHEST_SHEET, block.getType().getTextureId());
+            Material material = new Material(Sheets.CHEST_SHEET, new ResourceLocation(DDIY.MODID, "entity/chest/loot_chest"));
 
             VertexConsumer vertexConsumer = material.buffer(bufferSource, RenderType::entityCutout);
 

@@ -20,6 +20,8 @@ public class DDIY_Menus {
 
     public static final RegistryObject<MenuType<LootChestEditMenu>> LOOT_CHEST_EDIT_MENU =
             registerMenuType(LootChestEditMenu::new, "loot_chest_edit_menu");
+    public static final RegistryObject<MenuType<LootChestActiveMenu>> LOOT_CHEST_ACTIVE_MENU =
+            registerMenuType(LootChestActiveMenu::new, "loot_chest_active_menu");
 
     public static final RegistryObject<MenuType<RequirementDoorEditMenu>> REQUIREMENT_DOOR_EDIT_MENU =
             registerMenuType(RequirementDoorEditMenu::new, "requirement_door_edit_menu");

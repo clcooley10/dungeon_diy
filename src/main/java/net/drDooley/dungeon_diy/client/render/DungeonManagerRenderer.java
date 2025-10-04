@@ -16,6 +16,8 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.block.JukeboxBlock;
+import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -30,6 +32,8 @@ public class DungeonManagerRenderer implements BlockEntityRenderer<DungeonManage
 
     @Override
     public void render(DungeonManagerEntity pBlockEntity, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBufferSource, int pPackedLight, int pPackedOverlay) {
+        if (pBlockEntity.getBook().isEmpty()) { return; }
+
         pPoseStack.pushPose();
         pPoseStack.translate(0.5D, 0.75D, 0.5D);
         float f = (float)pBlockEntity.time + pPartialTick;

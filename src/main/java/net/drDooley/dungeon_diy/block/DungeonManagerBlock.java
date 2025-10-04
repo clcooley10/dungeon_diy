@@ -2,6 +2,7 @@ package net.drDooley.dungeon_diy.block;
 
 import net.drDooley.dungeon_diy.block.entity.DungeonManagerEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -11,14 +12,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.EnchantmentTableBlockEntity;
+import net.minecraft.world.level.block.entity.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -60,25 +60,15 @@ public class DungeonManagerBlock extends BaseEntityBlock {
         BlockEntity entity = pLevel.getBlockEntity(pPos);
         if (!(entity instanceof DungeonManagerEntity)) { return InteractionResult.PASS; }
 
-        ItemStack held = pPlayer.getItemInHand(pHand);
-
-        // Remove book (Adding is done through useOn of appropriate rulebook item.
-        if (pPlayer.isCrouching()) {
-            if (pState.getValue(HAS_BOOK)) {
-                this.dropBook(pLevel, pPos);
-                pState = pState.setValue(HAS_BOOK, false);
-                pLevel.setBlock(pPos, pState, 2);
-                pLevel.gameEvent(GameEvent.BLOCK_CHANGE, pPos, GameEvent.Context.of(pPlayer, pState));
-                return InteractionResult.sidedSuccess(pLevel.isClientSide);
-            } else {
-                return InteractionResult.PASS;
-            }
-        } else {
-            // Open GUI
-            if (!pLevel.isClientSide) {
-                NetworkHooks.openScreen(((ServerPlayer) pPlayer), (DungeonManagerEntity) entity, pPos);
-            }
+        if (pState.getValue(HAS_BOOK)) {
+            this.dropBook(pLevel, pPos);
+            pLevel.setBlock(pPos, pState.setValue(HAS_BOOK, false), Block.UPDATE_CLIENTS);
+            pLevel.updateNeighborsAt(pPos, pState.getBlock());
+            pLevel.gameEvent(GameEvent.BLOCK_CHANGE, pPos, GameEvent.Context.of(pPlayer, pState));
+            pLevel.sendBlockUpdated(pPos, pState, pState, Block.UPDATE_ALL);
             return InteractionResult.sidedSuccess(pLevel.isClientSide);
+        } else {
+            return InteractionResult.PASS;
         }
     }
 
@@ -103,12 +93,14 @@ public class DungeonManagerBlock extends BaseEntityBlock {
         }
     }
 
-    public void setBook(@Nullable Entity pEntity, LevelAccessor pLevel, BlockPos pPos, BlockState pState, ItemStack pStack) {
+    public void setBook(@Nullable Entity pEntity, Level pLevel, BlockPos pPos, BlockState pState, ItemStack pStack) {
         BlockEntity blockentity = pLevel.getBlockEntity(pPos);
         if (blockentity instanceof DungeonManagerEntity manager) {
-            manager.setBook(pStack.copy());
-            pLevel.setBlock(pPos, pState.setValue(HAS_BOOK, true), 2);
+            manager.setBook(pStack.split(1));
+            pLevel.setBlock(pPos, pState.setValue(HAS_BOOK, true), Block.UPDATE_ALL);
             pLevel.gameEvent(GameEvent.BLOCK_CHANGE, pPos, GameEvent.Context.of(pEntity, pState));
+            pLevel.playSound((Player)null, pPos, SoundEvents.BOOK_PUT, SoundSource.BLOCKS, 1.0F, 1.0F);
+            pLevel.sendBlockUpdated(pPos, pState, pState, Block.UPDATE_ALL);
         }
     }
 
@@ -117,32 +109,42 @@ public class DungeonManagerBlock extends BaseEntityBlock {
         pBuilder.add(POWERED, HAS_BOOK);
     }
 
-    public static boolean tryPlaceBook(@Nullable Player pPlayer, Level pLevel, BlockPos pPos, BlockState pState, ItemStack pBook) {
-        if (!pState.getValue(HAS_BOOK)) {
-            if (!pLevel.isClientSide) {
-                placeBook(pPlayer, pLevel, pPos, pState, pBook);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    private static void placeBook(@Nullable Player pPlayer, Level pLevel, BlockPos pPos, BlockState pState, ItemStack pBook) {
-        BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-        if (blockentity instanceof DungeonManagerEntity managerEntity) {
-            managerEntity.setBook(pBook.split(1));
-            resetBookState(pLevel, pPos, pState, true);
-            pLevel.playSound((Player)null, pPos, SoundEvents.BOOK_PUT, SoundSource.BLOCKS, 1.0F, 1.0F);
-            pLevel.gameEvent(pPlayer, GameEvent.BLOCK_CHANGE, pPos);
-        }
-    }
-
-    public static void resetBookState(Level pLevel, BlockPos pPos, BlockState pState, boolean pHasBook) {
-        pLevel.setBlock(pPos, pState.setValue(POWERED, Boolean.valueOf(false)).setValue(HAS_BOOK, Boolean.valueOf(pHasBook)), 3);
-    }
-
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
         return pLevel.isClientSide ? createTickerHelper(pBlockEntityType, DDIY_Blocks.DUNGEON_MANAGER_ENTITY.get(), DungeonManagerEntity::bookAnimationTick) : null;
+    }
+
+    @Override
+    public boolean isSignalSource(BlockState pState) { return true; }
+
+    @Override
+    public int getSignal(BlockState pState, BlockGetter pLevel, BlockPos pPos, Direction pDirection) {
+        BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
+        if (blockEntity instanceof DungeonManagerEntity manager) {
+            return manager.getBook().isEmpty() ? 0 : 15;
+        }
+        return 0;
+    }
+
+    @Override
+    public void onNeighborChange(BlockState state, LevelReader level, BlockPos pos, BlockPos neighbor) {
+        if (level.isClientSide()) return;
+
+        if (level instanceof Level lvl) {
+            boolean hasSignal = lvl.hasNeighborSignal(pos);
+            boolean powered = state.getValue(POWERED);
+
+            if (hasSignal != powered) {
+                lvl.setBlock(pos, state.setValue(POWERED, hasSignal), Block.UPDATE_ALL);
+
+                if (hasSignal) {
+                    resetDungeonState(lvl);
+                }
+            }
+        }
+    }
+
+    public void resetDungeonState(Level level) {
+
     }
 }

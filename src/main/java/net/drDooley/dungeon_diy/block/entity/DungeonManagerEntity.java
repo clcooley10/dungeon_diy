@@ -1,11 +1,16 @@
 package net.drDooley.dungeon_diy.block.entity;
 
+import net.drDooley.dungeon_diy.DDIY;
 import net.drDooley.dungeon_diy.block.DDIY_Blocks;
 import net.drDooley.dungeon_diy.item.DDIY_Items;
 import net.minecraft.client.renderer.blockentity.EnchantTableRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.MenuProvider;
@@ -17,10 +22,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.EnchantmentTableBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.EnchantmentTableBlockEntity;
+import net.minecraft.world.level.block.entity.LecternBlockEntity;
+import net.minecraft.world.level.block.piston.PistonBaseBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-public class DungeonManagerEntity extends BlockEntity implements MenuProvider {
+public class DungeonManagerEntity extends BlockEntity {
     ItemStack rulebook = ItemStack.EMPTY;
     public int time;
     public float flip;
@@ -40,8 +47,6 @@ public class DungeonManagerEntity extends BlockEntity implements MenuProvider {
 
     public ItemStack getBook() { return this.rulebook; }
 
-    public boolean hasBook() { return this.rulebook.is(DDIY_Items.DUNGEON_RULEBOOK.get()); }
-
     public void setBook(ItemStack pStack) {
         this.rulebook = pStack;
         this.setChanged();
@@ -50,17 +55,6 @@ public class DungeonManagerEntity extends BlockEntity implements MenuProvider {
     public void removeBook() {
         this.rulebook = ItemStack.EMPTY;
         this.setChanged();
-    }
-
-    @Override
-    public Component getDisplayName() {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-        return null;
     }
 
     @Override
@@ -133,5 +127,33 @@ public class DungeonManagerEntity extends BlockEntity implements MenuProvider {
         f = Mth.clamp(f, -0.2F, 0.2F);
         pBlockEntity.flipA += (f - pBlockEntity.flipA) * 0.9F;
         pBlockEntity.flip += pBlockEntity.flipA;
+    }
+
+    @Nullable
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        CompoundTag tag = super.getUpdateTag();
+        if (!this.getBook().isEmpty()) {
+            tag.put("RulebookItem", this.getBook().save(new CompoundTag()));
+        } else {
+            tag.put("RulebookItem", new CompoundTag());
+        }
+        return tag;
+    }
+
+    @Override
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        super.onDataPacket(net, pkt);
+        CompoundTag tag = pkt.getTag();
+        if (tag.contains("RulebookItem", 10)) {
+            this.setBook(ItemStack.of(tag.getCompound("RulebookItem")));
+        } else {
+            this.setBook(ItemStack.EMPTY);
+        }
     }
 }

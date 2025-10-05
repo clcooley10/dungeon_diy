@@ -15,6 +15,10 @@ public class DDIY_Menus {
     public static final DeferredRegister<MenuType<?>> MENUS =
             DeferredRegister.create(ForgeRegistries.MENU_TYPES, DDIY.MODID);
 
+    public static final RegistryObject<MenuType<DungeonConfigMenu>> DUNGEON_CONFIG_MENU =
+            registerMenuType(DungeonConfigMenu::new, "dungeon_config_menu");
+
+
     public static final RegistryObject<MenuType<LayoutBlockMenu>> LAYOUT_BLOCK_MENU =
             registerMenuType(LayoutBlockMenu::new, "layout_block_menu");
 

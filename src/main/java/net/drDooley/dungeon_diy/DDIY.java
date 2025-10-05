@@ -56,6 +56,7 @@ public class DDIY {
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
+            MenuScreens.register(DDIY_Menus.DUNGEON_CONFIG_MENU.get(), DungeonConfigScreen::new);
 
             MenuScreens.register(DDIY_Menus.LAYOUT_BLOCK_MENU.get(), LayoutBlockScreen::new);
             MenuScreens.register(DDIY_Menus.LOOT_CHEST_EDIT_MENU.get(), LootChestEditScreen::new);

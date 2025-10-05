@@ -1,4 +1,4 @@
-package net.drDooley.dungeon_diy.client.render;
+package net.drDooley.dungeon_diy.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

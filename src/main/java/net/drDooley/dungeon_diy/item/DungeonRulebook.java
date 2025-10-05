@@ -96,28 +96,15 @@ public class DungeonRulebook extends Item {
         DDIY.LOGGER.info("Enter use");
 
         ItemStack stack = pPlayer.getItemInHand(pUsedHand);
-
-        if (!stack.hasTag() || !stack.getTag().hasUUID("DungeonId")) {
-            DDIY.LOGGER.info("Creating new Dungeon");
-            if (!pLevel.isClientSide) {
-                ServerLevel serverLevel = (ServerLevel) pLevel;
-                DataManager manager = DataManager.get(serverLevel);
-
-                UUID id = manager.createDungeon(serverLevel);
-                stack.getOrCreateTag().putUUID("DungeonId", id);
-            }
-            return InteractionResultHolder.success(stack);
-        }
-
         if (!pLevel.isClientSide) {
             DDIY.LOGGER.info("Opening GUI");
 
-            UUID id = stack.getTag().getUUID("DungeonId");
             ServerLevel serverLevel = (ServerLevel) pLevel;
-            ServerPlayer serverPlayer = (ServerPlayer) pPlayer;
             DataManager manager = DataManager.get(serverLevel);
+            UUID id = stack.getTag().getUUID("DungeonId");
             DungeonConfig config = manager.getDungeon(id);
 
+            ServerPlayer serverPlayer = (ServerPlayer) pPlayer;
             NetworkHooks.openScreen(serverPlayer,
                     new SimpleMenuProvider((windowId, inv, p) ->
                             new DungeonConfigMenu(windowId, inv, id),

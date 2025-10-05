@@ -1,9 +1,16 @@
 package net.drDooley.dungeon_diy.util;
 
 import net.drDooley.dungeon_diy.dimension.DDIY_Dimensions;
+import net.drDooley.dungeon_diy.dungeon.DataManager;
+import net.drDooley.dungeon_diy.item.DDIY_Items;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+
+import java.util.UUID;
 
 // Trying to maintain good organization following DimDungeons
 // Many methods are taken from there too
@@ -29,4 +36,28 @@ public class DDIY_Utils {
         return Math.round(size);
     }
 
+    public static void convertOffhandToRulebook(ServerPlayer player, InteractionHand hand) {
+        Level level = player.level;
+        if (level.isClientSide) return;
+
+        // Create the new Rulebook and dungeon
+        ServerLevel serverLevel = (ServerLevel) level;
+        DataManager manager = DataManager.get(serverLevel);
+
+        UUID id = manager.createDungeon(serverLevel);
+        ItemStack rulebook = new ItemStack(DDIY_Items.DUNGEON_RULEBOOK.get());
+        rulebook.getOrCreateTag().putUUID("DungeonId", id);
+
+        // Move any leftover offhand books to the inventory
+        ItemStack offhand = player.getItemInHand(hand);
+        offhand.shrink(1);
+        if (offhand.getCount() > 0) {
+            if (!player.getInventory().add(offhand)) {
+                player.drop(offhand, false);
+            }
+        }
+
+        // Put rulebook in offhand
+        player.setItemInHand(hand, rulebook);
+    }
 }

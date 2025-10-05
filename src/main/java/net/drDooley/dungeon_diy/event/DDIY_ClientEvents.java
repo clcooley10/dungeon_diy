@@ -1,8 +1,8 @@
-package net.drDooley.dungeon_diy.client;
+package net.drDooley.dungeon_diy.event;
 
 import net.drDooley.dungeon_diy.DDIY;
 import net.drDooley.dungeon_diy.block.DDIY_Blocks;
-import net.drDooley.dungeon_diy.client.render.DungeonManagerRenderer;
+import net.drDooley.dungeon_diy.render.DungeonManagerRenderer;
 import net.drDooley.dungeon_diy.unused.DungeonTeleporterBlockEntityRenderer;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.resources.ResourceLocation;

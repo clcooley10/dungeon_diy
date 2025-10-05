@@ -2,14 +2,13 @@ package net.drDooley.dungeon_diy;
 
 import com.mojang.logging.LogUtils;
 import net.drDooley.dungeon_diy.block.DDIY_Blocks;
-import net.drDooley.dungeon_diy.client.render.LootChestRenderer;
 import net.drDooley.dungeon_diy.dimension.DDIY_Dimensions;
+import net.drDooley.dungeon_diy.enchantment.DDIY_Enchantments;
 import net.drDooley.dungeon_diy.item.DDIY_Items;
 import net.drDooley.dungeon_diy.networking.DDIY_Packets;
 import net.drDooley.dungeon_diy.screen.*;
 import net.drDooley.dungeon_diy.unused.LayoutBlockScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.api.distmarker.Dist;
@@ -38,6 +37,7 @@ public class DDIY {
         DDIY_Dimensions.register();
         DDIY_Items.register(modEventBus);
         DDIY_Menus.register(modEventBus);
+        DDIY_Enchantments.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
         context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);

@@ -1,0 +1,11 @@
+{
+  "type": "dungeon_diy:copy_rulebook",
+  "ingredients": [
+    { "item": "dungeon_diy:dungeon_rulebook" },
+    { "item": "minecraft:book" }
+  ],
+  "result": {
+    "item": "dungeon_diy:dungeon_rulebook",
+    "count": 2
+  }
+}

@@ -6,6 +6,7 @@ import net.drDooley.dungeon_diy.dimension.DDIY_Dimensions;
 import net.drDooley.dungeon_diy.enchantment.DDIY_Enchantments;
 import net.drDooley.dungeon_diy.item.DDIY_Items;
 import net.drDooley.dungeon_diy.networking.DDIY_Packets;
+import net.drDooley.dungeon_diy.recipe.DDIY_Recipes;
 import net.drDooley.dungeon_diy.screen.*;
 import net.drDooley.dungeon_diy.unused.LayoutBlockScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -35,9 +36,10 @@ public class DDIY {
 
         DDIY_Blocks.register(modEventBus);
         DDIY_Dimensions.register();
+        DDIY_Enchantments.register(modEventBus);
         DDIY_Items.register(modEventBus);
         DDIY_Menus.register(modEventBus);
-        DDIY_Enchantments.register(modEventBus);
+        DDIY_Recipes.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
         context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);

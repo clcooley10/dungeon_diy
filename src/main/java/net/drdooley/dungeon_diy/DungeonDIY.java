@@ -1,5 +1,7 @@
 package net.drdooley.dungeon_diy;
 
+import net.drdooley.dungeon_diy.item.DDIYItems;
+import net.minecraft.world.item.CreativeModeTabs;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -28,6 +30,8 @@ public class DungeonDIY {
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
 
+        DDIYItems.register(modEventBus);
+
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
@@ -37,6 +41,11 @@ public class DungeonDIY {
 
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
+            event.accept(DDIYItems.TATTERED_BOOK);
+            event.accept(DDIYItems.ANCIENT_BOOK);
+            event.accept(DDIYItems.DUNGEON_CODEX);
+        }
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call

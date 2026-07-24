@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "dungeon_diy:block/ancient_vault"
+    },
+    "facing=south": {
+      "model": "dungeon_diy:block/ancient_vault",
+      "y": 180
+    },
+    "facing=east": {
+      "model": "dungeon_diy:block/ancient_vault",
+      "y": 90
+    },
+    "facing=west": {
+      "model": "dungeon_diy:block/ancient_vault",
+      "y": 270
+    }
+  }
+}

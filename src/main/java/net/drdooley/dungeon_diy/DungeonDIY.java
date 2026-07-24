@@ -1,6 +1,9 @@
 package net.drdooley.dungeon_diy;
 
-import net.drdooley.dungeon_diy.item.DDIYItems;
+import net.drdooley.dungeon_diy.Block.DDIYBlocks;
+import net.drdooley.dungeon_diy.Item.DDIYCreativeTab;
+import net.drdooley.dungeon_diy.Item.DDIYItems;
+import net.drdooley.dungeon_diy.WorldGen.DDIYWorldGen;
 import net.minecraft.world.item.CreativeModeTabs;
 import org.slf4j.Logger;
 
@@ -27,11 +30,15 @@ public class DungeonDIY {
     public DungeonDIY(IEventBus modEventBus, ModContainer modContainer) {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
-        // Register the item to a creative tab
-        modEventBus.addListener(this::addCreative);
+
+        DDIYCreativeTab.register(modEventBus);
 
         DDIYItems.register(modEventBus);
+        DDIYBlocks.register(modEventBus);
+        DDIYWorldGen.STRUCTURE_TYPES.register(modEventBus);
 
+        // Register the item to a creative tab
+        modEventBus.addListener(this::addCreative);
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
@@ -41,11 +48,13 @@ public class DungeonDIY {
 
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
-            event.accept(DDIYItems.TATTERED_BOOK);
-            event.accept(DDIYItems.ANCIENT_BOOK);
-            event.accept(DDIYItems.DUNGEON_CODEX);
-        }
+//        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
+//            event.accept(DDIYItems.TATTERED_BOOK);
+//            event.accept(DDIYItems.ANCIENT_BOOK);
+//            event.accept(DDIYItems.DUNGEON_CODEX);
+//            event.accept(DDIYBlocks.ANCIENT_VAULT);
+//            event.accept(DDIYBlocks.RUINED_ALTAR);
+//        }
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call

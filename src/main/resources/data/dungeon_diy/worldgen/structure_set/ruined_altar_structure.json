@@ -1,0 +1,22 @@
+{
+  "structures": [
+    {
+      "structure": "dungeon_diy:ruined_altar_structure",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "":"The kind of placement to use. Here we use own own custom placement to allow special position selecting.",
+    "type": "minecraft:random_spread",
+
+    "":"Make sure this is unique and does not match any other structure set's salt",
+    "salt": 895443435,
+
+    "":"The average distance apart in chunks for spawn attempts",
+    "spacing": 20,
+
+    "":"Minimum distance apart in chunks for spawn attempts",
+    "":"MUST ALWAYS BE SMALLER THAN spacing ABOVE",
+    "separation": 10
+  }
+}

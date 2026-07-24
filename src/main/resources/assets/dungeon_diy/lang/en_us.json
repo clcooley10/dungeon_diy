@@ -1,5 +1,11 @@
 {
+  "creativetab.dungeon_diy.creative_tab": "Dungeon DIY",
+
   "item.dungeon_diy.tattered_book": "Tattered Book",
   "item.dungeon_diy.ancient_book": "Ancient Book",
-  "item.dungeon_diy.dungeon_codex": "Dungeon Codex"
+  "item.dungeon_diy.dungeon_codex": "Dungeon Codex",
+  "item.dungeon_diy.broken_compass": "Broken Compass",
+
+  "block.dungeon_diy.ancient_vault": "Ancient Vault",
+  "block.dungeon_diy.ruined_altar": "Ruined Altar"
 }

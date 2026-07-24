@@ -1,0 +1,21 @@
+{
+  "type": "dungeon_diy:ruined_altar_structure",
+  "biomes": [
+    "minecraft:nether_wastes",
+    "minecraft:crimson_forest",
+    "minecraft:warped_forest",
+    "minecraft:soul_sand_valley",
+    "minecraft:basalt_deltas"
+  ],
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "none",
+  "start_pool": "dungeon_diy:ruined_altar",
+  "size": 1,
+  "start_height": {
+    "absolute": 33
+  },
+  "max_distance_from_center": 80,
+  "liquid_settings": "ignore_waterlogging",
+  "use_expansion_hack": false
+}

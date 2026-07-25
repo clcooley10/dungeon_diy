@@ -1,6 +1,7 @@
 package net.drdooley.dungeon_diy;
 
 import net.drdooley.dungeon_diy.Block.DDIYBlocks;
+import net.drdooley.dungeon_diy.Component.DDIYDataComponents;
 import net.drdooley.dungeon_diy.Item.DDIYCreativeTab;
 import net.drdooley.dungeon_diy.Item.DDIYItems;
 import net.drdooley.dungeon_diy.WorldGen.DDIYWorldGen;
@@ -36,6 +37,7 @@ public class DungeonDIY {
         DDIYItems.register(modEventBus);
         DDIYBlocks.register(modEventBus);
         DDIYWorldGen.STRUCTURE_TYPES.register(modEventBus);
+        DDIYDataComponents.register(modEventBus);
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);

@@ -8,6 +8,7 @@ public class DungeonInstance {
     private final UUID id;
     private int tick;
     private final List<DungeonNode> nodes = new ArrayList<>();
+    private final VaultInventory vaultInventory = new VaultInventory();
 
     public DungeonInstance(UUID id) {
         this.id = id;

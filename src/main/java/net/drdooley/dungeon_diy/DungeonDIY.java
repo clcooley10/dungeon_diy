@@ -5,6 +5,7 @@ import net.drdooley.dungeon_diy.Component.DDIYDataComponents;
 import net.drdooley.dungeon_diy.Item.DDIYCreativeTab;
 import net.drdooley.dungeon_diy.Item.DDIYItems;
 import net.drdooley.dungeon_diy.WorldGen.DDIYWorldGen;
+import net.drdooley.dungeon_diy.screen.DDIYMenus;
 import net.minecraft.world.item.CreativeModeTabs;
 import org.slf4j.Logger;
 
@@ -38,6 +39,7 @@ public class DungeonDIY {
         DDIYBlocks.register(modEventBus);
         DDIYWorldGen.STRUCTURE_TYPES.register(modEventBus);
         DDIYDataComponents.register(modEventBus);
+        DDIYMenus.register(modEventBus);
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);

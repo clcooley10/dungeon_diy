@@ -3,13 +3,18 @@ package net.drdooley.dungeon_diy.Block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class AncientVaultBlockEntity extends BlockEntity {
+public class AncientVaultBlockEntity extends BlockEntity implements MenuProvider {
     @Nullable
     private UUID dungeonId;
 
@@ -43,5 +48,15 @@ public class AncientVaultBlockEntity extends BlockEntity {
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         this.dungeonId = tag.getUUID("dungeonID");
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("menu.dungeon_diy.ancient_vault");
+    }
+
+    @Override
+    public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+        return null;
     }
 }

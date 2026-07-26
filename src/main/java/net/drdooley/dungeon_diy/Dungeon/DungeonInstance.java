@@ -17,6 +17,8 @@ public class DungeonInstance {
         return id;
     }
 
+    public VaultInventory getVaultInventory() { return vaultInventory; }
+
     public void tick() {
         tick++;
         for (DungeonNode node : nodes) {

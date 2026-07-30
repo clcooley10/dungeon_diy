@@ -20,9 +20,10 @@ import java.util.UUID;
 
 @EventBusSubscriber(modid = DungeonDIY.MOD_ID)
 public class DungeonServerEvents {
+    //TODO: Overworld may not be right, also may not even use tick
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post e) {
-        DungeonManager.tickDungeons();
+        DungeonManager.tickDungeons(e.getServer().overworld());
     }
 
     @SubscribeEvent
@@ -30,7 +31,7 @@ public class DungeonServerEvents {
         event.getDispatcher().register(
           Commands.literal("dungeon-diy")
             .then(Commands.literal("create").executes(ctx -> {
-                DungeonManager.createDungeon();
+                DungeonManager.createDungeon(ctx.getSource().getLevel());
                 return 1;
             }))
             .then(Commands.literal("list").executes(ctx -> {
@@ -46,7 +47,7 @@ public class DungeonServerEvents {
                         .executes(ctx -> {
                             String idStr = StringArgumentType.getString(ctx, "dungeon_id");
                             UUID id = UUID.fromString(idStr);
-                            DungeonInstance dungeon = DungeonManager.getDungeon(id);
+                            DungeonInstance dungeon = DungeonManager.getDungeon(ctx.getSource().getLevel(), id);
                             if (dungeon == null) {
                                 ctx.getSource().sendFailure(Component.literal("Dungeon not found: " + idStr));
                                 return 0;

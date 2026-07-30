@@ -36,7 +36,7 @@ public class RuinedAltarBlock extends Block {
                 return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
             ServerLevel world = (ServerLevel) level;
-            DungeonInstance instance = DungeonManager.createDungeon();
+            DungeonInstance instance = DungeonManager.createDungeon(world);
             ItemStack codex = new ItemStack(DDIYItems.DUNGEON_CODEX.get());
             codex.set(DDIYDataComponents.DUNGEON_ID, instance.getId());
 

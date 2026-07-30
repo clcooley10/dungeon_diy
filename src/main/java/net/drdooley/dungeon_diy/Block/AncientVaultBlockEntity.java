@@ -1,9 +1,13 @@
 package net.drdooley.dungeon_diy.Block;
 
+import net.drdooley.dungeon_diy.Dungeon.DungeonInstance;
+import net.drdooley.dungeon_diy.Dungeon.DungeonManager;
+import net.drdooley.dungeon_diy.screen.AncientVaultMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -57,6 +61,8 @@ public class AncientVaultBlockEntity extends BlockEntity implements MenuProvider
 
     @Override
     public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
-        return null;
+        DungeonInstance instance = DungeonManager.getDungeon((ServerLevel) player.level(), dungeonId);
+        if (instance == null) return null;
+        return new AncientVaultMenu(containerId, playerInventory, this);
     }
 }

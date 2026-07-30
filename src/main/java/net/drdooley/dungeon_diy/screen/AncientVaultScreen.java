@@ -14,7 +14,7 @@ public class AncientVaultScreen extends AbstractContainerScreen<AncientVaultMenu
 
     public AncientVaultScreen(AncientVaultMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
-        GUI_TEXTURE = ResourceLocation.fromNamespaceAndPath(DungeonDIY.MOD_ID, "textures/gui/ancient_vault/vault_" + menu.numSlots + ".png");
+        GUI_TEXTURE = ResourceLocation.fromNamespaceAndPath(DungeonDIY.MOD_ID, "textures/gui/ancient_vault/vault_" + menu.numVaultSlots + ".png");
     }
 
     @Override

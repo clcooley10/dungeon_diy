@@ -5,16 +5,14 @@ import net.drdooley.dungeon_diy.Block.DDIYBlocks;
 import net.drdooley.dungeon_diy.Dungeon.DungeonInstance;
 import net.drdooley.dungeon_diy.Dungeon.DungeonManager;
 import net.drdooley.dungeon_diy.Dungeon.VaultInventory;
-import net.drdooley.dungeon_diy.DungeonDIY;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
@@ -22,30 +20,46 @@ import org.jetbrains.annotations.Nullable;
 
 public class AncientVaultMenu extends AbstractContainerMenu {
     private final AncientVaultBlockEntity vaultBlockEntity;
-    private final VaultInventory vaultInventory;
-    private final Level level;
-    public int numSlots = 27;
+    @Nullable
+    private VaultInventory vaultInventory;
+    private ItemStackHandler clientInventory;
+    @Nullable
+    private ServerLevel level;
+    public int numVaultSlots;
 
     public AncientVaultMenu(int containerId, Inventory inv, FriendlyByteBuf extraData) {
-        this(containerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()));
+        this(containerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()), null, extraData.readInt());
     }
 
     public AncientVaultMenu(int containerId, Inventory inv, BlockEntity blockEntity) {
-        super(DDIYMenus.ANCIENT_VAULT_MENU.get(), containerId);
-        this.vaultBlockEntity = (AncientVaultBlockEntity) blockEntity;
-        this.level = inv.player.level();
+        this(containerId, inv, blockEntity, getVaultInventory(inv, (AncientVaultBlockEntity) blockEntity), -1);
+    }
 
-        if (!this.vaultBlockEntity.isBound()) {
-            DungeonDIY.LOGGER.warn("AncientVaultMenu: vault block entity is not bound to a dungeon!");
+    public AncientVaultMenu(int containerId, Inventory inv, BlockEntity blockEntity, @Nullable VaultInventory vaultInventory, int clientSlotCount) {
+        super(DDIYMenus.ANCIENT_VAULT_MENU.get(), containerId);
+        if (!(blockEntity instanceof AncientVaultBlockEntity vaultBE)) {
+            throw new IllegalStateException("Wrong block entity for AncientVaultMenu");
         }
-        DungeonInstance instance = DungeonManager.getDungeon(this.vaultBlockEntity.getDungeonId());
-        this.vaultInventory = instance.getVaultInventory();
-        this.numSlots = this.vaultInventory.getHandler().getSlots();
+        this.vaultBlockEntity = vaultBE;
+        this.vaultInventory = vaultInventory;
+        if (vaultInventory != null) {
+            this.numVaultSlots = vaultInventory.getHandler().getSlots();
+        } else {
+            this.numVaultSlots = clientSlotCount;
+        }
+        if (inv.player.level() instanceof ServerLevel serverLevel) {
+            this.level = serverLevel;
+        }
 
         addPlayerInventory(inv);
         addPlayerHotbar(inv);
-        addVaultInventory(this.vaultInventory);
 
+        if (vaultInventory != null) {
+            addVaultInventory(vaultInventory.getHandler());
+        } else {
+            this.clientInventory = new ItemStackHandler(numVaultSlots);
+            addVaultInventory(clientInventory);
+        }
     }
 
     // CREDIT GOES TO: diesieben07 | https://github.com/diesieben07/SevenCommons
@@ -63,8 +77,6 @@ public class AncientVaultMenu extends AbstractContainerMenu {
     private static final int VANILLA_FIRST_SLOT_INDEX = 0;
     private static final int TE_INVENTORY_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
 
-    // THIS YOU HAVE TO DEFINE!
-    private final int TE_INVENTORY_SLOT_COUNT = this.numSlots;
     @Override
     public ItemStack quickMoveStack(Player playerIn, int pIndex) {
         Slot sourceSlot = slots.get(pIndex);
@@ -76,10 +88,10 @@ public class AncientVaultMenu extends AbstractContainerMenu {
         if (pIndex < VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT) {
             // This is a vanilla container slot so merge the stack into the tile inventory
             if (!moveItemStackTo(sourceStack, TE_INVENTORY_FIRST_SLOT_INDEX, TE_INVENTORY_FIRST_SLOT_INDEX
-              + TE_INVENTORY_SLOT_COUNT, false)) {
+              + numVaultSlots, false)) {
                 return ItemStack.EMPTY;  // EMPTY_ITEM
             }
-        } else if (pIndex < TE_INVENTORY_FIRST_SLOT_INDEX + TE_INVENTORY_SLOT_COUNT) {
+        } else if (pIndex < TE_INVENTORY_FIRST_SLOT_INDEX + numVaultSlots) {
             // This is a TE slot so merge the stack into the players inventory
             if (!moveItemStackTo(sourceStack, VANILLA_FIRST_SLOT_INDEX, VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT, false)) {
                 return ItemStack.EMPTY;
@@ -100,6 +112,9 @@ public class AncientVaultMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
+        if (level == null) {
+            return false;
+        }
         return stillValid(ContainerLevelAccess.create(level, vaultBlockEntity.getBlockPos()),
           player, DDIYBlocks.ANCIENT_VAULT.get());
     }
@@ -118,14 +133,21 @@ public class AncientVaultMenu extends AbstractContainerMenu {
         }
     }
 
-    // TODO: Change y-coords
-    private void addVaultInventory(VaultInventory inventory) {
-        ItemStackHandler itemStackHandler = inventory.getHandler();
-        int rows = (int) itemStackHandler.getSlots() / 9;
+    private void addVaultInventory(ItemStackHandler itemStackHandler) {
+        int rows = itemStackHandler.getSlots() / 9;
         for (int i = 0; i < rows; ++i) {
             for (int l = 0; l < 9; ++l) {
-                this.addSlot(new SlotItemHandler(itemStackHandler, l + i * 9 + 9, 8 + l * 18, 84 + i * 18));
+                this.addSlot(new SlotItemHandler(itemStackHandler, l + i * 9, 8 + l * 18, 18 + i * 18));
             }
         }
+    }
+
+    private static VaultInventory getVaultInventory(Inventory inv, AncientVaultBlockEntity vaultBlockEntity) {
+        ServerLevel level = (ServerLevel) inv.player.level();
+        DungeonInstance instance = DungeonManager.getDungeon(level, vaultBlockEntity.getDungeonId());
+        if (instance == null) {
+            throw new IllegalStateException("Vault has no dungeon instance");
+        }
+        return instance.getVaultInventory();
     }
 }

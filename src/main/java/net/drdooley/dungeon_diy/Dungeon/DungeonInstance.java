@@ -1,23 +1,24 @@
 package net.drdooley.dungeon_diy.Dungeon;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class DungeonInstance {
     private final UUID id;
     private int tick;
-    private final List<DungeonNode> nodes = new ArrayList<>();
+    private final Map<BlockPos, DungeonNode> nodes = new HashMap<>();
     private final VaultInventory vaultInventory;
+    private final Runnable markDirty;
 
-    public DungeonInstance(UUID id, Runnable stackHandlerRunnable) {
+    public DungeonInstance(UUID id, Runnable markDirty) {
         this.id = id;
-        this.vaultInventory = new VaultInventory(27, stackHandlerRunnable);
+        this.markDirty = markDirty;
+        this.vaultInventory = new VaultInventory(27, markDirty);
     }
     public UUID getId() {
         return id;
@@ -27,7 +28,7 @@ public class DungeonInstance {
 
     public void tick() {
         tick++;
-        for (DungeonNode node : nodes) {
+        for (DungeonNode node : nodes.values()) {
             node.tick(this);
         }
     }
@@ -35,8 +36,20 @@ public class DungeonInstance {
         return tick;
     }
 
-    public List<DungeonNode> getNodes() {
+    public Map<BlockPos, DungeonNode> getNodes() {
         return nodes;
+    }
+
+    // Returns true on successful add, returns false on remove
+    public boolean toggleNode(BlockPos pos) {
+        if (nodes.containsKey(pos)) {
+            nodes.remove(pos);
+            markDirty.run();
+            return false;
+        }
+        nodes.put(pos, new DungeonNode(pos));
+        markDirty.run();
+        return true;
     }
 
     public CompoundTag save(HolderLookup.Provider registries)  {
@@ -45,7 +58,7 @@ public class DungeonInstance {
         tag.put("VaultInventory", vaultInventory.serializeNBT(registries));
 
         ListTag nodeList = new ListTag();
-        for (DungeonNode node : nodes) {
+        for (DungeonNode node : nodes.values()) {
             nodeList.add(node.save());
         }
         tag.put("Nodes", nodeList);
@@ -59,10 +72,13 @@ public class DungeonInstance {
         instance.vaultInventory.deserializeNBT(registries, tag.getCompound("VaultInventory"));
         ListTag nodeList = tag.getList("Nodes", Tag.TAG_COMPOUND);
         for (Tag nodeTag : nodeList) {
-            instance.nodes.add(
-              DungeonNode.load((CompoundTag) nodeTag)
-            );
+            DungeonNode node = DungeonNode.load((CompoundTag) nodeTag);
+            instance.nodes.put(node.getPos(), node);
         }
         return instance;
+    }
+
+    private void markDirty() {
+        markDirty.run();
     }
 }

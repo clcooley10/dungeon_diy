@@ -53,7 +53,7 @@ public class DungeonServerEvents {
                                 return 0;
                             }
                             BlockPos pos = new BlockPos(IntegerArgumentType.getInteger(ctx, "X"), IntegerArgumentType.getInteger(ctx, "Y"), IntegerArgumentType.getInteger(ctx, "Z"));
-                            dungeon.getNodes().add(new DungeonNode(pos));
+                            dungeon.toggleNode(pos);
                             ctx.getSource().sendSuccess(() -> Component.literal("Node added to dungeon " + idStr), false);
                             return 1;
 

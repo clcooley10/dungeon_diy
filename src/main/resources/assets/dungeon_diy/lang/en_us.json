@@ -1,11 +1,15 @@
 {
   "creativetab.dungeon_diy.creative_tab": "Dungeon DIY",
   "menu.dungeon_diy.ancient_vault": "Ancient Vault",
+  "menu.dungeon_diy.dungeon_codex": "Dungeon Codex",
   "gui.dungeon_diy.ancient_vault_title": "Ancient Vault",
 
   "item.dungeon_diy.tattered_book": "Tattered Book",
   "item.dungeon_diy.ancient_book": "Ancient Book",
   "item.dungeon_diy.dungeon_codex": "Dungeon Codex",
+  "item.dungeon_diy.dungeon_codex.added_node": "Registered (%s) to the dungeon.",
+  "item.dungeon_diy.dungeon_codex.removed_node": "Unregistered (%s) from the dungeon.",
+  "item.dungeon_diy.dungeon_codex.click_no_dungeon": "The codex is not bound to a dungeon.",
   "item.dungeon_diy.broken_compass": "Broken Compass",
 
   "block.dungeon_diy.ancient_vault": "Ancient Vault",

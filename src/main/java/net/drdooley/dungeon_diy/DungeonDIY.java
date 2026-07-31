@@ -7,6 +7,7 @@ import net.drdooley.dungeon_diy.Item.DDIYItems;
 import net.drdooley.dungeon_diy.WorldGen.DDIYWorldGen;
 import net.drdooley.dungeon_diy.screen.AncientVaultScreen;
 import net.drdooley.dungeon_diy.screen.DDIYMenus;
+import net.drdooley.dungeon_diy.screen.DungeonCodexScreen;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -79,6 +80,7 @@ public class DungeonDIY {
         @SubscribeEvent
         public static void registerScreens(RegisterMenuScreensEvent event) {
             event.register(DDIYMenus.ANCIENT_VAULT_MENU.get(), AncientVaultScreen::new);
+            event.register(DDIYMenus.DUNGEON_CODEX_MENU.get(), DungeonCodexScreen::new);
         }
     }
 }

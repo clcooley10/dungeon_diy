@@ -15,6 +15,8 @@ public class DDIYMenus {
 
     public static final DeferredHolder<MenuType<?>, MenuType<AncientVaultMenu>> ANCIENT_VAULT_MENU =
       registerMenuType("ancient_vault_menu", AncientVaultMenu::new);
+    public static final DeferredHolder<MenuType<?>, MenuType<DungeonCodexMenu>> DUNGEON_CODEX_MENU =
+      registerMenuType("dungeon_codex_menu", DungeonCodexMenu::new);
 
     private static <T extends AbstractContainerMenu>DeferredHolder<MenuType<?>, MenuType<T>> registerMenuType(String name, IContainerFactory<T> factory) {
         return MENUS.register(name, () -> IMenuTypeExtension.create(factory));

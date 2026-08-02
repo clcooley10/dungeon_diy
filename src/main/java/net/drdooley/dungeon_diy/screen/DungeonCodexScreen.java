@@ -1,6 +1,7 @@
 package net.drdooley.dungeon_diy.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.drdooley.dungeon_diy.Dungeon.DungeonNode;
 import net.drdooley.dungeon_diy.DungeonDIY;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -34,6 +35,32 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
         int y = (height - imageHeight) / 2;
 
         guiGraphics.blit(GUI_TEXTURE, x, y, 0, 0, imageWidth, imageHeight);
+
+        x = this.leftPos + 10;
+        y = this.topPos + 10;
+
+        guiGraphics.drawString(
+          this.font,
+          "Dungeon Nodes:",
+          x,
+          y,
+          0xFFFFFF
+        );
+
+        y += 15;
+
+        for (DungeonNode node : menu.getNodes()) {
+
+            guiGraphics.drawString(
+              this.font,
+              node.getPos().toShortString(),
+              x,
+              y,
+              0xFFFFFF
+            );
+
+            y += 12;
+        }
     }
 
     @Override

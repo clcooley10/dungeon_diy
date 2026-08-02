@@ -2,10 +2,7 @@ package net.drdooley.dungeon_diy.Item;
 
 import net.drdooley.dungeon_diy.Block.AncientVaultBlockEntity;
 import net.drdooley.dungeon_diy.Component.DDIYDataComponents;
-import net.drdooley.dungeon_diy.Dungeon.DungeonInstance;
-import net.drdooley.dungeon_diy.Dungeon.DungeonManager;
-import net.drdooley.dungeon_diy.Dungeon.DungeonNode;
-import net.drdooley.dungeon_diy.Dungeon.DungeonSavedData;
+import net.drdooley.dungeon_diy.Dungeon.*;
 import net.drdooley.dungeon_diy.screen.DungeonCodexMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -22,6 +19,8 @@ import net.minecraft.world.item.WritableBookItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -41,14 +40,17 @@ public class DungeonCodexItem extends BookItem {
             BlockPos blockPos = context.getClickedPos();
             UUID dungeonID = context.getItemInHand().get(DDIYDataComponents.DUNGEON_ID);
             DungeonInstance dungeonInstance = DungeonManager.getDungeon((ServerLevel) level, dungeonID);
-            boolean added = dungeonInstance.toggleNode(blockPos);
-            if (added) {
-                context.getPlayer().sendSystemMessage(Component.translatable("item.dungeon_diy.dungeon_codex.added_node", blockPos.toShortString()));
-            } else {
+            if (dungeonInstance.getNodes().containsKey(blockPos)) {
+                dungeonInstance.removeNode(blockPos);
                 context.getPlayer().sendSystemMessage(Component.translatable("item.dungeon_diy.dungeon_codex.removed_node", blockPos.toShortString()));
+            } else {
+                boolean added = dungeonInstance.addNode(blockPos, level.getBlockState(blockPos));
+                if (added) {
+                    context.getPlayer().sendSystemMessage(Component.translatable("item.dungeon_diy.dungeon_codex.added_node", blockPos.toShortString()));
+                }
             }
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return InteractionResult.SUCCESS;
     }
 
     @Override
@@ -63,18 +65,19 @@ public class DungeonCodexItem extends BookItem {
             player.sendSystemMessage(Component.translatable("item.dungeon_diy.dungeon_codex.click_no_dungeon"));
             return InteractionResultHolder.fail(stack);
         }
-        serverPlayer.openMenu(new MenuProvider() {
-            @Override
-            public Component getDisplayName() {
-                return Component.translatable("menu.dungeon_diy.dungeon_codex");
-            }
-            @Override
-            public AbstractContainerMenu createMenu(int containerId, Inventory inv, Player player) {
-                return new DungeonCodexMenu(containerId, inv, dungeonId);
-            }
-        }, buf -> {
-            buf.writeUUID(dungeonId);
-        });
+        DungeonInstance instance = DungeonManager.getDungeon((ServerLevel) level, dungeonId);
+        serverPlayer.openMenu(new SimpleMenuProvider((containerId, inventory, p) ->
+            new DungeonCodexMenu(containerId, inventory, dungeonId),
+            Component.translatable("menu.dungeon_diy.dungeon_codex")),
+          buf -> {
+              buf.writeUUID(dungeonId);
+              List<DungeonNode> nodes = new ArrayList<>(instance.getNodes().values());
+              buf.writeInt(nodes.size());
+              for (DungeonNode node : nodes) {
+                  node.writeNetworkData(buf);
+              }
+          }
+        );
         return InteractionResultHolder.consume(stack);
     }
 

@@ -10,6 +10,7 @@ import net.drdooley.dungeon_diy.DungeonDIY;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -53,7 +54,8 @@ public class DungeonServerEvents {
                                 return 0;
                             }
                             BlockPos pos = new BlockPos(IntegerArgumentType.getInteger(ctx, "X"), IntegerArgumentType.getInteger(ctx, "Y"), IntegerArgumentType.getInteger(ctx, "Z"));
-                            dungeon.toggleNode(pos);
+                            BlockState state = ctx.getSource().getLevel().getBlockState(pos);
+                            dungeon.addNode(pos, state);
                             ctx.getSource().sendSuccess(() -> Component.literal("Node added to dungeon " + idStr), false);
                             return 1;
 

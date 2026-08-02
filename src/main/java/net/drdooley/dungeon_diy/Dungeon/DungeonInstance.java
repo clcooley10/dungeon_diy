@@ -5,6 +5,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.*;
 
@@ -40,16 +41,21 @@ public class DungeonInstance {
         return nodes;
     }
 
-    // Returns true on successful add, returns false on remove
-    public boolean toggleNode(BlockPos pos) {
+    public boolean addNode(BlockPos pos, BlockState state) {
         if (nodes.containsKey(pos)) {
-            nodes.remove(pos);
-            markDirty.run();
             return false;
         }
-        nodes.put(pos, new DungeonNode(pos));
+        DungeonNode node = new DungeonNode(pos);
+        node.addReplacement(new ReplacementEntry(state, 1));
+        nodes.put(pos, node);
         markDirty.run();
         return true;
+    }
+
+    public boolean removeNode(BlockPos pos) {
+        DungeonNode removed = nodes.remove(pos);
+        markDirty.run();
+        return removed != null;
     }
 
     public CompoundTag save(HolderLookup.Provider registries)  {
@@ -72,7 +78,7 @@ public class DungeonInstance {
         instance.vaultInventory.deserializeNBT(registries, tag.getCompound("VaultInventory"));
         ListTag nodeList = tag.getList("Nodes", Tag.TAG_COMPOUND);
         for (Tag nodeTag : nodeList) {
-            DungeonNode node = DungeonNode.load((CompoundTag) nodeTag);
+            DungeonNode node = DungeonNode.load((CompoundTag) nodeTag, registries);
             instance.nodes.put(node.getPos(), node);
         }
         return instance;

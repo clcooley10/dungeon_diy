@@ -4,6 +4,7 @@ import net.drdooley.dungeon_diy.Block.AncientVaultBlockEntity;
 import net.drdooley.dungeon_diy.Component.DDIYDataComponents;
 import net.drdooley.dungeon_diy.Dungeon.*;
 import net.drdooley.dungeon_diy.screen.DungeonCodexMenu;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -18,6 +19,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.WritableBookItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,14 +44,43 @@ public class DungeonCodexItem extends BookItem {
             BlockPos blockPos = context.getClickedPos();
             UUID dungeonID = context.getItemInHand().get(DDIYDataComponents.DUNGEON_ID);
             DungeonInstance dungeonInstance = DungeonManager.getDungeon((ServerLevel) level, dungeonID);
+            // The node is already a part of the dungeon
             if (dungeonInstance.getNodes().containsKey(blockPos)) {
-                dungeonInstance.removeNode(blockPos);
-                context.getPlayer().sendSystemMessage(Component.translatable("item.dungeon_diy.dungeon_codex.removed_node", blockPos.toShortString()));
+                // Add another replacement entry to the node
+                if (context.getPlayer().isShiftKeyDown()) {
+                    DungeonNode node = dungeonInstance.getNodes().get(blockPos);
+                    BlockState blockState = level.getBlockState(blockPos);
+                    node.addReplacement(new ReplacementEntry(blockState, 1));
+                // Remove the node
+                } else {
+                    dungeonInstance.removeNode(blockPos);
+                    context.getPlayer().sendSystemMessage(Component.translatable("item.dungeon_diy.dungeon_codex.removed_node", blockPos.toShortString()));
+                    return InteractionResult.SUCCESS;
+                }
+            // New node being added
             } else {
                 boolean added = dungeonInstance.addNode(blockPos, level.getBlockState(blockPos));
                 if (added) {
                     context.getPlayer().sendSystemMessage(Component.translatable("item.dungeon_diy.dungeon_codex.added_node", blockPos.toShortString()));
                 }
+            }
+            // If player was crouched while scanning, send block to Vault
+            if (context.getPlayer().isShiftKeyDown()) {
+                BlockState state = level.getBlockState(blockPos);
+                if (state.isAir()) {
+                    return InteractionResult.SUCCESS;
+                }
+                ItemStack stack = new ItemStack(state.getBlock());
+                ItemStackHandler vaultHandler = dungeonInstance.getVaultInventory().getHandler();
+                for (int slot = 0; slot < vaultHandler.getSlots(); slot++) {
+                    ItemStack remainder = vaultHandler.insertItem(slot, stack, false);
+                    if (remainder.isEmpty()) {
+                        level.destroyBlock(blockPos, false);
+                        context.getPlayer().sendSystemMessage(Component.translatable("item.dungeon_diy.dungeon_codex.sent_to_vault", stack.getHoverName().getString()));
+                        return InteractionResult.SUCCESS;
+                    }
+                }
+                context.getPlayer().sendSystemMessage(Component.translatable("item.dungeon_diy.dungeon_codex.not_sent_to_vault", stack.getHoverName().getString()).withStyle(ChatFormatting.RED));
             }
         }
         return InteractionResult.SUCCESS;

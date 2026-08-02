@@ -20,6 +20,10 @@ public class ReplacementEntry {
         this.state = state;
         this.weight = weight;
     }
+    public ReplacementEntry(ReplacementEntry entry) {
+        this.state = entry.state;
+        this.weight = entry.weight;
+    }
 
     public BlockState getState() {
         return state;

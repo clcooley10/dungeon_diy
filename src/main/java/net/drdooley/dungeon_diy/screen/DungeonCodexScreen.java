@@ -2,6 +2,7 @@ package net.drdooley.dungeon_diy.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.drdooley.dungeon_diy.Dungeon.DungeonNode;
+import net.drdooley.dungeon_diy.Dungeon.ReplacementEntry;
 import net.drdooley.dungeon_diy.DungeonDIY;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -9,6 +10,9 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
 
 public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu> {
     private final ResourceLocation GUI_TEXTURE;
@@ -58,8 +62,11 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
               y,
               0xFFFFFF
             );
-
-            y += 12;
+            List<ReplacementEntry> entries = node.copyReplacements();
+            for (ReplacementEntry e : entries) {
+                guiGraphics.renderItem(new ItemStack(e.getState().getBlock().asItem()), x, y);
+                y += 12;
+            }
         }
     }
 

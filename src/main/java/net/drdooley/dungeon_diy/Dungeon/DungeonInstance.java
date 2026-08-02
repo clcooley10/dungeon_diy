@@ -12,9 +12,10 @@ import java.util.*;
 public class DungeonInstance {
     private final UUID id;
     private int tick;
-    private final Map<BlockPos, DungeonNode> nodes = new HashMap<>();
-    private final VaultInventory vaultInventory;
     private final Runnable markDirty;
+    private final VaultInventory vaultInventory;
+    private final Map<BlockPos, DungeonNode> nodes = new HashMap<>();
+    private final List<ReplacementPrefab> replacementPrefabs = new ArrayList<>();
 
     public DungeonInstance(UUID id, Runnable markDirty) {
         this.id = id;
@@ -68,6 +69,11 @@ public class DungeonInstance {
             nodeList.add(node.save());
         }
         tag.put("Nodes", nodeList);
+        ListTag replacementList = new ListTag();
+        for (ReplacementPrefab replacementPrefab : replacementPrefabs) {
+            replacementList.add(replacementPrefab.save());
+        }
+        tag.put("ReplacementPrefabs", replacementList);
 
         return tag;
     }
@@ -80,6 +86,11 @@ public class DungeonInstance {
         for (Tag nodeTag : nodeList) {
             DungeonNode node = DungeonNode.load((CompoundTag) nodeTag, registries);
             instance.nodes.put(node.getPos(), node);
+        }
+        ListTag replacementList = tag.getList("ReplacementPrefabs", Tag.TAG_COMPOUND);
+        for (Tag replTag : replacementList) {
+            ReplacementPrefab prefab =  ReplacementPrefab.load((CompoundTag) replTag, registries);
+            instance.replacementPrefabs.add(prefab);
         }
         return instance;
     }

@@ -25,12 +25,23 @@ public class DungeonNode {
         return pos;
     }
 
-    public List<ReplacementEntry> getReplacements() {
-        return replacements;
+    public List<ReplacementEntry> copyReplacements() {
+        List<ReplacementEntry> copy = new ArrayList<>();
+        for (ReplacementEntry entry : this.replacements) {
+            copy.add(new ReplacementEntry(entry));
+        }
+        return copy;
     }
 
     public void addReplacement(ReplacementEntry replacement) {
         this.replacements.add(replacement);
+    }
+
+    public void setReplacements(List<ReplacementEntry> replacements) {
+        this.replacements.clear();
+        for (ReplacementEntry entry : replacements) {
+            this.replacements.add(new ReplacementEntry(entry));
+        }
     }
 
     public CompoundTag save() {

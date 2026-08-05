@@ -1,4 +1,4 @@
-package net.drdooley.dungeon_diy.screen;
+package net.drdooley.dungeon_diy.Screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.drdooley.dungeon_diy.DungeonDIY;

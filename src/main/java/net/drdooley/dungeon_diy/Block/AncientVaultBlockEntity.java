@@ -2,7 +2,7 @@ package net.drdooley.dungeon_diy.Block;
 
 import net.drdooley.dungeon_diy.Dungeon.DungeonInstance;
 import net.drdooley.dungeon_diy.Dungeon.DungeonManager;
-import net.drdooley.dungeon_diy.screen.AncientVaultMenu;
+import net.drdooley.dungeon_diy.Screen.AncientVaultMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;

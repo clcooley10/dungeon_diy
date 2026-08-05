@@ -2,6 +2,7 @@ package net.drdooley.dungeon_diy.Event;
 
 import net.drdooley.dungeon_diy.DungeonDIY;
 import net.drdooley.dungeon_diy.Item.DDIYItems;
+import net.drdooley.dungeon_diy.Network.DDIYPayloads;
 import net.minecraft.core.*;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
@@ -12,6 +13,7 @@ import net.minecraft.world.item.trading.MerchantOffer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.village.VillagerTradesEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,5 +48,10 @@ public class DDIYGameEvents {
               10, 15, 0.0f
             ));
         }
+    }
+
+    @SubscribeEvent
+    public static void registerPayloads(RegisterPayloadHandlersEvent event) {
+        DDIYPayloads.register(event);
     }
 }

@@ -12,6 +12,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 public class ReplacementEntry {
     private BlockState state;
     private int weight;
@@ -30,6 +33,18 @@ public class ReplacementEntry {
     }
     public int getWeight() {
         return weight;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
+    public void addWeight() {
+        this.weight = min(99, this.weight + 1);
+    }
+
+    public void removeWeight() {
+        this.weight = max(1, this.weight - 1);
     }
 
     public CompoundTag save() {

@@ -95,7 +95,7 @@ public class DungeonInstance {
         return instance;
     }
 
-    private void markDirty() {
+    public void markDirty() {
         markDirty.run();
     }
 }

@@ -1,4 +1,4 @@
-package net.drdooley.dungeon_diy.screen;
+package net.drdooley.dungeon_diy.Screen;
 
 import net.drdooley.dungeon_diy.DungeonDIY;
 import net.minecraft.core.registries.Registries;

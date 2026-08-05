@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,14 @@ public class DungeonNode {
         return pos;
     }
 
+    public int sizeReplacements() {
+        return this.replacements.size();
+    }
+
+    public List<ReplacementEntry> getReplacements() {
+        return replacements;
+    }
+
     public List<ReplacementEntry> copyReplacements() {
         List<ReplacementEntry> copy = new ArrayList<>();
         for (ReplacementEntry entry : this.replacements) {
@@ -42,6 +51,18 @@ public class DungeonNode {
         for (ReplacementEntry entry : replacements) {
             this.replacements.add(new ReplacementEntry(entry));
         }
+    }
+
+    public ItemStack heavyWeightReplacementStack() {
+        int heaviestWeight = 0;
+        ReplacementEntry heavyEntry = this.replacements.getFirst();
+        for (ReplacementEntry entry : this.replacements) {
+            if (entry.getWeight() > heaviestWeight) {
+                heaviestWeight = entry.getWeight();
+                heavyEntry = entry;
+            }
+        }
+        return new ItemStack(heavyEntry.getState().getBlock().asItem());
     }
 
     public CompoundTag save() {

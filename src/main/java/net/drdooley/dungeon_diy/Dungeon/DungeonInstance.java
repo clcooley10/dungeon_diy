@@ -59,6 +59,23 @@ public class DungeonInstance {
         return removed != null;
     }
 
+    public void addPrefab(String name, List<ReplacementEntry> replacements) {
+        boolean exists = false;
+        for (ReplacementPrefab prefab : replacementPrefabs) {
+            if (prefab.name.equals(name)) {
+                exists = true;
+                prefab.entries = replacements;
+            }
+        }
+        if (exists) return;
+        ReplacementPrefab prefab = new ReplacementPrefab(UUID.randomUUID(), name, replacements);
+        replacementPrefabs.add(prefab);
+    }
+
+    public void removePrefab(String name) {
+        replacementPrefabs.removeIf(prefab -> prefab.name.equals(name));
+    }
+
     public CompoundTag save(HolderLookup.Provider registries)  {
         CompoundTag tag = new CompoundTag();
         tag.putUUID("Id", id);

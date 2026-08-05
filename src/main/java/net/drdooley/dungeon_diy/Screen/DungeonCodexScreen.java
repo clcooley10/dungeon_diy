@@ -5,13 +5,18 @@ import net.drdooley.dungeon_diy.Dungeon.DungeonNode;
 import net.drdooley.dungeon_diy.Dungeon.ReplacementEntry;
 import net.drdooley.dungeon_diy.DungeonDIY;
 import net.drdooley.dungeon_diy.Network.ChangeReplacementEntryWeightPayload;
+import net.drdooley.dungeon_diy.Network.ExportReplacementPrefabPayload;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -53,13 +58,14 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
 
     private static final int SQUARE_BUTTON_LENGTH = 14;
     private static final int IMPORT_REPL_PREFAB_X = 107;
-    private static final int IMPORT_REPL_PREFAB_Y = 127;
+    private static final int IMPORT_REPL_PREFAB_Y = 145;
     private static final int EXPORT_REPL_PREFAB_X = 126;
-    private static final int EXPORT_REPL_PREFAB_Y = 127;
+    private static final int EXPORT_REPL_PREFAB_Y = 145;
+    private static final int EXPORT_REPL_EDITBOX_X = 145;
     private static final int ADD_REPL_X = 107;
-    private static final int ADD_REPL_Y = 145;
+    private static final int ADD_REPL_Y = 127;
     private static final int REMOVE_REPL_X = 126;
-    private static final int REMOVE_REPL_Y = 145;
+    private static final int REMOVE_REPL_Y = 127;
 
     private final NodeButton[] nodeButtons = new NodeButton[VISIBLE_NODES];
 
@@ -71,6 +77,12 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
     private boolean exportHovered;
     private boolean addReplHovered;
     private boolean delReplHovered;
+
+    private EditBox prefabNameBox;
+    // Shaking
+    private int shakeTicks = 0;
+    // Pattern of horizontal offsets
+    private static final int[] SHAKE_OFFSETS = {-4, 4, -3, 3, -2, 2, -1, 1, 0, 0};
     // private final PieChartWidget pieChart = new PieChartWidget();
 
     public DungeonCodexScreen(DungeonCodexMenu menu, Inventory playerInventory, Component title) {
@@ -98,6 +110,23 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
             );
             k += 20;
         }
+
+        prefabNameBox = new EditBox(
+          font,
+          leftPos + EXPORT_REPL_EDITBOX_X,
+          topPos + EXPORT_REPL_PREFAB_Y,
+          80,
+          SQUARE_BUTTON_LENGTH,
+          Component.literal("Prefab Name")
+        );
+        prefabNameBox.setMaxLength(32);
+        prefabNameBox.setCanLoseFocus(true);
+        prefabNameBox.setVisible(true);
+        prefabNameBox.setHint(Component.literal("Name"));
+
+        addRenderableWidget(prefabNameBox);
+        prefabNameBox.setFocused(true);
+        this.setFocused(prefabNameBox);
     }
 
     private void postButtonClick() {
@@ -244,12 +273,6 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
                 nodeButtons[i].visible = false;
             }
         }
-        // The focused button (white border) should move when scrolled.
-        if (selectedNode >= scrollOff && selectedNode < scrollOff + nodeButtons.length) {
-            this.setFocused(nodeButtons[selectedNode - scrollOff]);
-        } else {
-            this.setFocused(null);
-        }
     }
 
     @Override
@@ -272,6 +295,25 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
         if (node != null) {
             // Future maybe, pie chart showing relative probability of each replacementEntry
             // pieChart.render(pGuiGraphics, leftPos + 145, topPos + 32, 20);
+        }
+    }
+
+    @Override
+    protected void containerTick() {
+        super.containerTick();
+
+        if (this.shakeTicks > 0) {
+            this.shakeTicks--;
+
+            // Map the remaining ticks to our offset array index
+            int index = SHAKE_OFFSETS.length - 1 - this.shakeTicks;
+            int currentOffset = SHAKE_OFFSETS[index];
+
+            // Mutate the X coordinate of the existing widget directly
+            this.prefabNameBox.setX(leftPos + EXPORT_REPL_EDITBOX_X + currentOffset);
+        } else {
+            // Ensure it snaps perfectly back to center when done shaking
+            this.prefabNameBox.setX(leftPos + EXPORT_REPL_EDITBOX_X);
         }
     }
 
@@ -301,41 +343,75 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         int max = Math.max(0, menu.getNodeCount() - VISIBLE_NODES);
         scrollOff = Mth.clamp(scrollOff - (int)Math.signum(scrollY), 0, max);
+        // Lose focus on scroll, not ideal, but prevent focus from staying on NodeButton after the containing node was scrolled to a diff index
+        if ((this.getFocused() instanceof NodeButton)) {
+            this.setFocused(null);
+        }
         updateNodeButtons();
         return true;
-    }
-
-    private boolean isLeftScaleClicked(double mouseX, double mouseY) {
-        return mouseX >= leftPos + SCALE_LEFT_ARM_X && mouseX < leftPos + SCALE_LEFT_ARM_X + SCALE_ARM_WIDTH &&
-          mouseY >= topPos + SCALE_ARM_Y && mouseY < topPos + SCALE_ARM_Y + SCALE_ARM_HEIGHT;
-    }
-    private boolean isRightScaleClicked(double mouseX, double mouseY) {
-        return mouseX >= leftPos + SCALE_RIGHT_ARM_X && mouseX < leftPos + SCALE_RIGHT_ARM_X + SCALE_ARM_WIDTH &&
-          mouseY >= topPos + SCALE_ARM_Y && mouseY < topPos + SCALE_ARM_Y + SCALE_ARM_HEIGHT;
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0) {
             // Scales
-            if (isLeftScaleClicked(mouseX, mouseY)) {
+            if (leftScaleHovered) {
+                this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 PacketDistributor.sendToServer(new ChangeReplacementEntryWeightPayload(menu.getDungeonId(), menu.getSelectedNode().getPos(), menu.getSelectedReplacementIndex(), false));
                 return true;
             }
-            if (isRightScaleClicked(mouseX, mouseY)) {
+            if (rightScaleHovered) {
+                this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 PacketDistributor.sendToServer(new ChangeReplacementEntryWeightPayload(menu.getDungeonId(), menu.getSelectedNode().getPos(), menu.getSelectedReplacementIndex(), true));
                 return true;
             }
+            // Replacement Entry Slots
             int index = getReplacementSlot(mouseX, mouseY);
             if (index >= 0) {
                 DungeonNode node = menu.getSelectedNode();
                 if (index < node.getReplacements().size()) {
+                    this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     menu.setSelectedReplacementIndex(index);
                     return true;
                 }
             }
+            // Import/Export Add/Delete
+            if (exportHovered) {
+                this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                String prefabName = prefabNameBox.getValue();
+                if (!prefabName.isEmpty()) {
+                    PacketDistributor.sendToServer(new ExportReplacementPrefabPayload(menu.getDungeonId(), menu.getSelectedNode().getPos(), prefabName));
+                } else {
+                    shakeTicks = SHAKE_OFFSETS.length;
+                }
+                return true;
+            }
         }
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (prefabNameBox != null && prefabNameBox.isFocused()) {
+            if (prefabNameBox.keyPressed(keyCode, scanCode, modifiers)) {
+                return true;
+            }
+            // Allow escape to close the screen
+            if (keyCode != 256) {
+                return true;
+            }
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean charTyped(char codePoint, int modifiers) {
+        if (prefabNameBox != null && prefabNameBox.isFocused()) {
+            if (prefabNameBox.charTyped(codePoint, modifiers)) {
+                return true;
+            }
+        }
+        return super.charTyped(codePoint, modifiers);
     }
 
     private void renderScroller(GuiGraphics guiGraphics, int posX, int posY, List<DungeonNode> nodes) {

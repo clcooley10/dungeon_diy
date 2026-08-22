@@ -7,6 +7,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -16,13 +18,25 @@ import java.util.UUID;
 
 public class ReplacementPrefab {
     UUID id;
-    String name;
-    List<ReplacementEntry> entries;
+    public String name;
+    public List<ReplacementEntry> entries;
 
     ReplacementPrefab(UUID id, String name, List<ReplacementEntry> entries) {
         this.id = id;
         this.name = name;
         this.entries = entries;
+    }
+
+    public ItemStack heavyWeightReplacementStack() {
+        int heaviestWeight = 0;
+        ReplacementEntry heavyEntry = this.entries.getFirst();
+        for (ReplacementEntry entry : this.entries) {
+            if (entry.getWeight() > heaviestWeight) {
+                heaviestWeight = entry.getWeight();
+                heavyEntry = entry;
+            }
+        }
+        return new ItemStack(heavyEntry.getState().getBlock().asItem());
     }
 
     public CompoundTag save() {
@@ -47,5 +61,25 @@ public class ReplacementPrefab {
             newEntries.add(e);
         }
         return new ReplacementPrefab(id, name, newEntries);
+    }
+
+    public static ReplacementPrefab readNetworkData(FriendlyByteBuf buf) {
+        UUID id = buf.readUUID();
+        String name = buf.readUtf();
+        int size = buf.readVarInt();
+        List<ReplacementEntry> entries = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            entries.add(ReplacementEntry.readNetworkData(buf));
+        }
+        return new ReplacementPrefab(id, name, entries);
+    }
+
+    public void writeNetworkData(FriendlyByteBuf buf) {
+        buf.writeUUID(id);
+        buf.writeUtf(name);
+        buf.writeVarInt(entries.size());
+        for (ReplacementEntry entry : entries) {
+            entry.writeNetworkData(buf);
+        }
     }
 }

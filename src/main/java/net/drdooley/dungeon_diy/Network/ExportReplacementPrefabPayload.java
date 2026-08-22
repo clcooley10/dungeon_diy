@@ -3,7 +3,6 @@ package net.drdooley.dungeon_diy.Network;
 import net.drdooley.dungeon_diy.Dungeon.DungeonInstance;
 import net.drdooley.dungeon_diy.Dungeon.DungeonManager;
 import net.drdooley.dungeon_diy.Dungeon.DungeonNode;
-import net.drdooley.dungeon_diy.Dungeon.ReplacementEntry;
 import net.drdooley.dungeon_diy.DungeonDIY;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
@@ -16,13 +15,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public record ExportReplacementPrefabPayload(UUID dungeonId, BlockPos nodePos, String prefabName) implements CustomPacketPayload {
-
-
     public static final Type<ExportReplacementPrefabPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(DungeonDIY.MOD_ID, "export_replacement_prefab"));
-
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ExportReplacementPrefabPayload> STREAM_CODEC =
       StreamCodec.composite(
@@ -51,8 +48,10 @@ public record ExportReplacementPrefabPayload(UUID dungeonId, BlockPos nodePos, S
             if (dungeon == null) return;
             DungeonNode node = dungeon.getNodes().get(payload.nodePos());
             if (node == null) return;
-            dungeon.addPrefab(payload.prefabName(), node.copyReplacements());
+            dungeon.addReplPrefab(payload.prefabName(), node.copyReplacements());
             dungeon.markDirty();
+
+            PacketDistributor.sendToPlayer(player, new SyncReplacementPrefabsPayload(new ArrayList<>(dungeon.getReplPrefabs())));
         });
     }
 }

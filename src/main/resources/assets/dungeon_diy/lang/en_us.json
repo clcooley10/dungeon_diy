@@ -4,12 +4,15 @@
   "menu.dungeon_diy.dungeon_codex": "Dungeon Codex",
 
   "gui.dungeon_diy.ancient_vault_title": "Ancient Vault",
+  "gui.dungeon_diy.dungeon_codex.title_node_view_edit": "Dungeon Codex",
+  "gui.dungeon_diy.dungeon_codex.title_import_repl": "Import Replacement Policy",
   "gui.dungeon_diy.dungeon_codex.decrease_weight": "Decrease Weight",
   "gui.dungeon_diy.dungeon_codex.increase_weight": "Increase Weight",
   "gui.dungeon_diy.dungeon_codex.import_repl_prefab": "Import Replacement Prefab",
   "gui.dungeon_diy.dungeon_codex.export_repl_prefab": "Export Replacement Prefab",
   "gui.dungeon_diy.dungeon_codex.add_repl_entry": "Add Replacement Entry",
   "gui.dungeon_diy.dungeon_codex.del_repl_entry": "Remove Replacement Entry",
+  "gui.dungeon_diy.dungeon_codex.back": "Go Back",
 
   "item.dungeon_diy.tattered_book": "Tattered Book",
   "item.dungeon_diy.ancient_book": "Ancient Book",

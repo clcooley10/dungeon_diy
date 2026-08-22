@@ -8,6 +8,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -27,6 +29,12 @@ public class ReplacementEntry {
         this.state = entry.state;
         this.weight = entry.weight;
     }
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, ReplacementEntry> STREAM_CODEC =
+      StreamCodec.of(
+        (buf, entry) -> entry.writeNetworkData(buf),
+        ReplacementEntry::readNetworkData
+      );
 
     public BlockState getState() {
         return state;

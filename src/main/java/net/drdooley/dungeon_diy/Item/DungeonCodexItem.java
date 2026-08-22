@@ -97,6 +97,11 @@ public class DungeonCodexItem extends BookItem {
               for (DungeonNode node : nodes) {
                   node.writeNetworkData(buf);
               }
+              List<ReplacementPrefab> prefabs = new ArrayList<>(instance.getReplPrefabs());
+              buf.writeInt(prefabs.size());
+              for (ReplacementPrefab prefab : prefabs) {
+                  prefab.writeNetworkData(buf);
+              }
           }
         );
         return InteractionResultHolder.consume(stack);

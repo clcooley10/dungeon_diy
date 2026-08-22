@@ -59,7 +59,15 @@ public class DungeonInstance {
         return removed != null;
     }
 
-    public void addPrefab(String name, List<ReplacementEntry> replacements) {
+    public ReplacementPrefab getReplPrefab(int index) {
+        return replacementPrefabs.get(index);
+    }
+
+    public List<ReplacementPrefab> getReplPrefabs() {
+        return replacementPrefabs;
+    }
+
+    public void addReplPrefab(String name, List<ReplacementEntry> replacements) {
         boolean exists = false;
         for (ReplacementPrefab prefab : replacementPrefabs) {
             if (prefab.name.equals(name)) {
@@ -72,7 +80,7 @@ public class DungeonInstance {
         replacementPrefabs.add(prefab);
     }
 
-    public void removePrefab(String name) {
+    public void removeReplPrefab(String name) {
         replacementPrefabs.removeIf(prefab -> prefab.name.equals(name));
     }
 

@@ -19,10 +19,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import java.util.UUID;
 
 public record ChangeReplacementEntryWeightPayload(UUID dungeonId, BlockPos nodePos, int replacementIndex, boolean increase) implements CustomPacketPayload {
-
-
     public static final Type<ChangeReplacementEntryWeightPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(DungeonDIY.MOD_ID, "change_replacement_weight"));
-
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ChangeReplacementEntryWeightPayload> STREAM_CODEC =
       StreamCodec.composite(

@@ -26,10 +26,17 @@ public class DDIYBlocks {
     public static final DeferredBlock<Block> RUINED_ALTAR = registerBlock("ruined_altar",
       () -> new RuinedAltarBlock(BlockBehaviour.Properties.of().noOcclusion()));
 
+    public static final DeferredBlock<Block> ANCIENT_PEDESTAL = registerBlock("ancient_pedestal",
+      () -> new AncientPedestalBlock(BlockBehaviour.Properties.of().noOcclusion()));
+
 
     public static final Supplier<BlockEntityType<AncientVaultBlockEntity>> ANCIENT_VAULT_BE =
       BLOCK_ENTITIES.register("ancient_vault_be", () -> BlockEntityType.Builder.of(
         AncientVaultBlockEntity::new, ANCIENT_VAULT.get()).build(null));
+
+    public static final Supplier<BlockEntityType<AncientPedestalBlockEntity>> ANCIENT_PEDESTAL_BE =
+      BLOCK_ENTITIES.register("ancient_pedestal_be", () -> BlockEntityType.Builder.of(
+        AncientPedestalBlockEntity::new, ANCIENT_PEDESTAL.get()).build(null));
 
     private static <T extends Block> DeferredBlock<T> registerBlock(String name, Supplier<T> block) {
         DeferredBlock<T> toReturn = BLOCKS.register(name, block);

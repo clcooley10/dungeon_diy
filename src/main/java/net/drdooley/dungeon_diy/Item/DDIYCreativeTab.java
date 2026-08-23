@@ -26,6 +26,7 @@ public class DDIYCreativeTab {
             output.accept(DDIYItems.BROKEN_COMPASS);
             output.accept(DDIYBlocks.ANCIENT_VAULT);
             output.accept(DDIYBlocks.RUINED_ALTAR);
+            output.accept(DDIYBlocks.ANCIENT_PEDESTAL);
         }).build());
 
     public static void register(IEventBus eventBus) {

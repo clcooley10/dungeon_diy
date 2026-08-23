@@ -2,6 +2,7 @@
   "creativetab.dungeon_diy.creative_tab": "Dungeon DIY",
   "menu.dungeon_diy.ancient_vault": "Ancient Vault",
   "menu.dungeon_diy.dungeon_codex": "Dungeon Codex",
+  "menu.dungeon_diy.ancient_pedestal": "Ancient Pedestal",
 
   "gui.dungeon_diy.ancient_vault_title": "Ancient Vault",
   "gui.dungeon_diy.dungeon_codex.title_node_view_edit": "Dungeon Codex",
@@ -27,5 +28,6 @@
   "item.dungeon_diy.broken_compass": "Broken Compass",
 
   "block.dungeon_diy.ancient_vault": "Ancient Vault",
-  "block.dungeon_diy.ruined_altar": "Ruined Altar"
+  "block.dungeon_diy.ruined_altar": "Ruined Altar",
+  "block.dungeon_diy.ancient_pedestal": "Ancient Pedestal"
 }

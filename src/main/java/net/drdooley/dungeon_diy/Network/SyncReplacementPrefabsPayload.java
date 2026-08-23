@@ -13,9 +13,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import java.util.ArrayList;
 import java.util.List;
 
-public record SyncReplacementPrefabsPayload(
-  List<ReplacementPrefab> prefabs
-) implements CustomPacketPayload {
+public record SyncReplacementPrefabsPayload(List<ReplacementPrefab> prefabs) implements CustomPacketPayload {
 
     public static final Type<SyncReplacementPrefabsPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(DungeonDIY.MOD_ID, "sync_replacement_prefabs"));
 

@@ -53,7 +53,14 @@ public class DungeonNode {
         }
     }
 
+    public void removeReplacement(int index) {
+        this.replacements.remove(index);
+    }
+
     public ItemStack heavyWeightReplacementStack() {
+        if (this.replacements.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
         int heaviestWeight = 0;
         ReplacementEntry heavyEntry = this.replacements.getFirst();
         for (ReplacementEntry entry : this.replacements) {

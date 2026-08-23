@@ -5,10 +5,7 @@ import net.drdooley.dungeon_diy.Dungeon.DungeonNode;
 import net.drdooley.dungeon_diy.Dungeon.ReplacementEntry;
 import net.drdooley.dungeon_diy.Dungeon.ReplacementPrefab;
 import net.drdooley.dungeon_diy.DungeonDIY;
-import net.drdooley.dungeon_diy.Network.ChangeDungeonCodexPagePayload;
-import net.drdooley.dungeon_diy.Network.ChangeReplacementEntryWeightPayload;
-import net.drdooley.dungeon_diy.Network.ExportReplacementPrefabPayload;
-import net.drdooley.dungeon_diy.Network.ImportReplacementPrefabPayload;
+import net.drdooley.dungeon_diy.Network.*;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -22,6 +19,9 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -47,6 +47,7 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
     private CodexPage currentPage;
     private final NodeViewEditPage  nodeViewEditPage;
     private final ImportReplPage  importReplPage;
+    private final AddReplEntryPage addReplEntryPage;
 
     private final DungeonCodexMenu menu;
 
@@ -57,6 +58,7 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
 
         this.nodeViewEditPage = new NodeViewEditPage();
         this.importReplPage = new ImportReplPage();
+        this.addReplEntryPage = new AddReplEntryPage();
 
         this.currentPage = nodeViewEditPage;
     }
@@ -70,6 +72,7 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
     public void setPage(CodexPageEnum pageEnum) {
         CodexPage newPage = switch (pageEnum) {
             case REPL_PREFAB_IMPORT -> importReplPage;
+            case ADD_REPL_ENTRY -> addReplEntryPage;
             default -> nodeViewEditPage;
         };
         setPage(newPage);
@@ -367,6 +370,17 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
                 if (importHovered) {
                     minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     PacketDistributor.sendToServer(new ChangeDungeonCodexPagePayload(CodexPageEnum.REPL_PREFAB_IMPORT));
+                    return true;
+                }
+                if (addReplHovered) {
+                    minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                    PacketDistributor.sendToServer(new ChangeDungeonCodexPagePayload(CodexPageEnum.ADD_REPL_ENTRY));
+                    return true;
+                }
+                if (delReplHovered) {
+                    minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                    PacketDistributor.sendToServer(new RemoveReplacementEntryPayload(menu.getDungeonId(), menu.getSelectedNode().getPos(), menu.getSelectedReplacementIndex()));
+                    menu.setSelectedReplacementIndex(index);
                     return true;
                 }
             }
@@ -886,6 +900,326 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
                 if (selected) {
                     graphics.fill(getX(), getY(), getX() + width, getY() + height, 0x40FFFFFF);
                 }
+            }
+        }
+    }
+
+    private class AddReplEntryPage implements CodexPage {
+        private static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(DungeonDIY.MOD_ID, "textures/gui/dungeon_codex/temp_codex_menu_add_replacement_entry.png");
+
+        private static final int TEXTURE_WIDTH = 512;
+        private static final int TEXTURE_HEIGHT = 256;
+
+        private static final int CENTERED_SCROLL_BUTTON_X = 49;
+
+        private static final int SELECTED_SLOT_X = 179;
+        private static final int SELECTED_SLOT_Y = 25;
+
+        private static final int REPLACEMENT_SLOT_SIZE = 18;
+        private static final int REPLACEMENT_COLUMNS = 9;
+        private static final int REPLACEMENT_START_X = 107;
+        private static final int REPLACEMENT_START_Y = 71;
+
+        private static final int ADD_REPL_X = 107;
+        private static final int ADD_REPL_Y = 127;
+        private static final int BACK_BTN_X = 126;
+        private static final int BACK_BTN_Y = 127;
+
+        private static final int SQUARE_BUTTON_LENGTH = 14;
+
+        private boolean addReplHovered;
+        private boolean backHovered;
+
+        private BlockState editingState;
+        private final BSPropertyButton[] propertyButtons = new BSPropertyButton[VISIBLE_SCROLL_BUTTONS];
+        private int scrollOff;
+
+        @Override
+        public CodexPageEnum getPageEnum() {
+            return CodexPageEnum.ADD_REPL_ENTRY;
+        }
+
+        @Override
+        public void init() {
+            createBSPropertyButtons();
+            updateBSPropertyButtons();
+        }
+
+        @Override
+        public void removed() {
+            for (BSPropertyButton button : propertyButtons) {
+                if (button != null) {
+                    removeWidget(button);
+                }
+            }
+            setFocused(null);
+        }
+
+        @Override
+        public void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.setShaderTexture(0, BACKGROUND);
+
+            int x = (width - imageWidth) / 2;
+            int y = (height - imageHeight) / 2;
+
+            graphics.blit(BACKGROUND, x, y, 0, 0, imageWidth, imageHeight, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+            renderVaultSlots(graphics, mouseX, mouseY);
+            renderSelectedBlock(graphics);
+            renderSquareButtons(graphics);
+        }
+
+        @Override
+        public void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+            graphics.drawString(font, Component.translatable("gui.dungeon_diy.dungeon_codex.title_add_repl"), titleLabelX, titleLabelY, 4210752, false);
+        }
+
+        @Override
+        public void renderTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
+            List<Component> tooltip = new ArrayList<>();
+            if (addReplHovered) {
+                tooltip.add(Component.translatable("gui.dungeon_diy.dungeon_codex.add_repl_entry"));
+            } else if (backHovered) {
+                tooltip.add(Component.translatable("gui.dungeon_diy.dungeon_codex.back"));
+            }
+            if (!tooltip.isEmpty()) {
+                graphics.renderComponentTooltip(font, tooltip, mouseX, mouseY);
+            }
+        }
+
+        @Override
+        public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+            updateHoverBools(mouseX, mouseY);
+            for (BSPropertyButton button : propertyButtons) {
+                if (button.isHoveredOrFocused()) {
+                    button.renderToolTip(graphics, mouseX, mouseY);
+                }
+            }
+            int i = (width - imageWidth) / 2;
+            int j = (height - imageHeight) / 2;
+            int items = 0;
+            if (editingState != null) {
+                items = editingState.getProperties().size();
+            }
+            renderScroller(graphics, i, j, items, scrollOff);
+            this.renderTooltip(graphics, mouseX, mouseY);
+        }
+
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (button == 0) {
+                // Vault Slots
+                int index = getClickedSlot(mouseX, mouseY);
+                if (index >= 0) {
+                    List<ItemStack> vaultStacks = menu.getVaultStacks();
+                    if (index < vaultStacks.size()) {
+                        minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                        try {
+                            // TODO: Validate in a better way for non-blocks.
+                            Block block = Block.byItem(vaultStacks.get(index).getItem());
+                            editingState = block.defaultBlockState();
+                            scrollOff = 0;
+                            removed();
+                            createBSPropertyButtons();
+                            updateBSPropertyButtons();
+                        } catch (Exception e) {
+                            DungeonDIY.LOGGER.info("Rejected {} as a possible Replacement Entry to add. ", vaultStacks.get(index).toString(), e);
+                            return false;
+                        }
+                        return true;
+                    }
+                }
+                // Add
+                if (addReplHovered) {
+                    minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                    PacketDistributor.sendToServer(new AddReplacementEntryPayload(menu.getDungeonId(), menu.getSelectedNode().getPos(), new ReplacementEntry(editingState, 1)));
+                    return true;
+                }
+                // Go back
+                if (backHovered) {
+                    minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                    setPage(nodeViewEditPage);
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+            int max = 0;
+            if (editingState != null) {
+                max = Math.max(0, editingState.getProperties().size() - VISIBLE_SCROLL_BUTTONS);
+            }
+            scrollOff = Mth.clamp(scrollOff - (int)Math.signum(scrollY), 0, max);
+            // Lose focus on scroll, not ideal, but prevent focus from staying on NodeButton after the containing node was scrolled to a diff index
+            if ((getFocused() instanceof BSPropertyButton)) {
+                setFocused(null);
+            }
+            updateBSPropertyButtons();
+            return true;
+        }
+
+        @Override
+        public boolean keyPressed(int keyCode, int scanCode, int modifiers) { return false; }
+
+        @Override
+        public boolean charTyped(char c, int modifiers) { return false; }
+
+        @Override
+        public void tick() {}
+
+
+        private void renderSquareButtons(GuiGraphics graphics) {
+            int u_offset = 0;
+            int v_offset = 0;
+            if (addReplHovered) { v_offset = SQUARE_BUTTON_LENGTH; }
+            graphics.blit(PLUS_MINUS, leftPos + ADD_REPL_X, topPos + ADD_REPL_Y, u_offset, v_offset, SQUARE_BUTTON_LENGTH, SQUARE_BUTTON_LENGTH, 28, 28);
+
+            v_offset = 0;
+            if (backHovered) { v_offset = SQUARE_BUTTON_LENGTH; }
+            graphics.blit(BACK, leftPos + BACK_BTN_X, topPos + BACK_BTN_Y, u_offset, v_offset, SQUARE_BUTTON_LENGTH, SQUARE_BUTTON_LENGTH, 14, 28);
+        }
+
+        // TODO: This eventually needs to be scrollable or display a larger vault inventory.
+        private void renderVaultSlots(GuiGraphics graphics, int mouseX, int mouseY) {
+            List<ItemStack> vaultStacks = menu.getVaultStacks();
+            if (vaultStacks == null) { return; }
+            for (int i = 0; i < 27; i++) {
+                int row = i / REPLACEMENT_COLUMNS;
+                int col = i % REPLACEMENT_COLUMNS;
+                int x = leftPos + REPLACEMENT_START_X + col * REPLACEMENT_SLOT_SIZE;
+                int y = topPos + REPLACEMENT_START_Y + row * REPLACEMENT_SLOT_SIZE;
+
+                boolean hovered = mouseX >= x && mouseX < x + REPLACEMENT_SLOT_SIZE && mouseY >= y && mouseY < y + REPLACEMENT_SLOT_SIZE;
+
+                // Highlight hovered fake slot
+                if (hovered) {
+                    graphics.fill(x + 1, y + 1, x + REPLACEMENT_SLOT_SIZE - 1, y + REPLACEMENT_SLOT_SIZE - 1, 0x80FFFFFF);
+                }
+
+                if (i < vaultStacks.size()) {
+                    graphics.renderFakeItem(vaultStacks.get(i), x + 1, y + 1);
+                }
+            }
+        }
+
+        private void renderSelectedBlock(GuiGraphics graphics) {
+            if (editingState == null) { return; }
+            ItemStack stack = new ItemStack(editingState.getBlock().asItem());
+            graphics.renderFakeItem(stack, leftPos + SELECTED_SLOT_X + 1, topPos + SELECTED_SLOT_Y + 1);
+        }
+
+        private int getClickedSlot(double mouseX, double mouseY) {
+            for (int i = 0; i < 27; i++) {
+                int row = i / REPLACEMENT_COLUMNS;
+                int col = i % REPLACEMENT_COLUMNS;
+                int x = leftPos + REPLACEMENT_START_X + col * REPLACEMENT_SLOT_SIZE;
+                int y = topPos + REPLACEMENT_START_Y + row * REPLACEMENT_SLOT_SIZE;
+
+                if (mouseX >= x && mouseX < x + REPLACEMENT_SLOT_SIZE && mouseY >= y && mouseY < y + REPLACEMENT_SLOT_SIZE) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        private void createBSPropertyButtons() {
+            int i = (width - imageWidth) / 2;
+            int j = (height - imageHeight) / 2;
+            int k = j + 16 + 2;
+
+            for (int l = 0; l < VISIBLE_SCROLL_BUTTONS; l++) {
+                propertyButtons[l] = addRenderableWidget(
+                  new BSPropertyButton(i + 5, k, l, button -> {
+                      if (button instanceof BSPropertyButton propertyButton) {
+                          propertyButton.toggleState();
+                      }
+                  })
+                );
+                k += 20;
+            }
+        }
+
+        private void updateBSPropertyButtons() {
+            if (editingState == null) { return; }
+            List<Property<?>> properties = new ArrayList<>(editingState.getProperties());
+            for (int i = 0; i < propertyButtons.length; i++) {
+                int index = scrollOff + i;
+                if (index < properties.size()) {
+                    propertyButtons[i].visible = true;
+                    propertyButtons[i].active = true;
+                    propertyButtons[i].setProperty(properties.get(index));
+                } else {
+                    propertyButtons[i].visible = false;
+                }
+            }
+        }
+
+        private void updateHoverBools(int mouseX, int mouseY) {
+            addReplHovered = mouseX >= leftPos + ADD_REPL_X && mouseX < leftPos + ADD_REPL_X + SQUARE_BUTTON_LENGTH && mouseY >= topPos + ADD_REPL_Y && mouseY < topPos + ADD_REPL_Y + SQUARE_BUTTON_LENGTH;
+            backHovered = mouseX >= leftPos + BACK_BTN_X && mouseX < leftPos + BACK_BTN_X + SQUARE_BUTTON_LENGTH && mouseY >= topPos + BACK_BTN_Y && mouseY < topPos + BACK_BTN_Y + SQUARE_BUTTON_LENGTH;
+        }
+
+        private <T extends Comparable<T>> void setPropertyValue(Property<T> property, Comparable<?> value) {
+            editingState = editingState.setValue(property, property.getValueClass().cast(value));
+        }
+
+        @OnlyIn(Dist.CLIENT)
+        class BSPropertyButton extends Button {
+            final int index;
+            private Property<?> property;
+            private Comparable<?> currentValue;
+            private Comparable<?> nextValue;
+
+            public BSPropertyButton(int x, int y, int index, Button.OnPress onPress) {
+                super(x, y, 88, 20, CommonComponents.EMPTY, onPress, DEFAULT_NARRATION);
+                this.index = index;
+                this.visible = false;
+            }
+
+            public int getIndex() {
+                return this.index;
+            }
+
+            public void setProperty(Property<?> property) {
+                this.property = property;
+                updateValues();
+            }
+
+            private void updateValues() {
+                currentValue = editingState.getValue(property);
+                List<? extends Comparable<?>> values = property.getPossibleValues().stream().toList();
+                int currentIndex = values.indexOf(currentValue);
+                int nextIndex = (currentIndex + 1) % values.size();
+                nextValue = values.get(nextIndex);
+            }
+
+            public void toggleState() {
+                Comparable<?> currentValue = editingState.getValue(property);
+                List<? extends Comparable<?>> values = property.getPossibleValues().stream().toList();
+                int index = values.indexOf(currentValue);
+                index = (index + 1) % values.size();
+                setPropertyValue(property, values.get(index));
+                updateValues();
+            }
+
+            public void renderToolTip(GuiGraphics graphics, int mouseX, int mouseY) {
+                if (!this.isHovered || this.property == null) {
+                    return;
+                }
+                List<Component> tooltip = new ArrayList<>();
+                tooltip.add(Component.literal("Toggle next value: " + nextValue.toString()));
+                graphics.renderComponentTooltip(font, tooltip, mouseX, mouseY);
+            }
+
+            @Override
+            protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+                super.renderWidget(graphics, mouseX, mouseY, partialTick);
+                if (property == null) return;
+
+                String text = font.plainSubstrByWidth(property.getName() + ": " + currentValue.toString(), 84);
+                graphics.drawCenteredString(font, text, leftPos + CENTERED_SCROLL_BUTTON_X, getY() + 6, 0xFFFFFF);
             }
         }
     }

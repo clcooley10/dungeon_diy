@@ -6,7 +6,8 @@ import net.minecraft.network.codec.StreamCodec;
 
 public enum CodexPageEnum {
     NODE_VIEW_EDIT(0),
-    REPL_PREFAB_IMPORT(1);
+    REPL_PREFAB_IMPORT(1),
+    ADD_REPL_ENTRY(2);
 
     private final int id;
     CodexPageEnum(int id) { this.id = id; }

@@ -3,11 +3,13 @@ package net.drdooley.dungeon_diy.Screen;
 import net.drdooley.dungeon_diy.Dungeon.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,7 @@ public class DungeonCodexMenu extends AbstractContainerMenu {
     private final UUID dungeonId;
     private final List<DungeonNode> nodes;
     private final List<ReplacementPrefab> replacementPrefabs;
+    private final List<ItemStack> vaultStacks;
     private int selectedNodeIndex = 0;
     private int selectedReplacementIndex = 0;
     private int selectedReplacementPrefabIndex = 0;
@@ -24,7 +27,7 @@ public class DungeonCodexMenu extends AbstractContainerMenu {
     public CodexPageEnum activePage = CodexPageEnum.NODE_VIEW_EDIT;
 
     // Client
-    public DungeonCodexMenu(int containerId, Inventory inv, FriendlyByteBuf buf) {
+    public DungeonCodexMenu(int containerId, Inventory inv, RegistryFriendlyByteBuf buf) {
         super(DDIYMenus.DUNGEON_CODEX_MENU.get(), containerId);
         this.dungeonId = buf.readUUID();
 
@@ -38,15 +41,21 @@ public class DungeonCodexMenu extends AbstractContainerMenu {
         for (int i = 0; i < prefabCount; i++) {
             this.replacementPrefabs.add(ReplacementPrefab.readNetworkData(buf));
         }
+        int vaultCount = buf.readInt();
+        this.vaultStacks = new ArrayList<>(vaultCount);
+        for (int i = 0; i < vaultCount; i++) {
+            this.vaultStacks.add(ItemStack.STREAM_CODEC.decode(buf));
+        }
     }
 
     // Server
-    public DungeonCodexMenu(int containerId, Inventory inv, UUID dungeonId) {
+    public DungeonCodexMenu(int containerId, Inventory inv, UUID dungeonId, List<ItemStack> vaultStacks) {
         super(DDIYMenus.DUNGEON_CODEX_MENU.get(), containerId);
 
         this.dungeonId = dungeonId;
-        DungeonInstance instance = DungeonManager.getDungeon((ServerLevel) inv.player.level(), dungeonId);
+        this.vaultStacks = vaultStacks;
 
+        DungeonInstance instance = DungeonManager.getDungeon((ServerLevel) inv.player.level(), dungeonId);
         this.nodes = new ArrayList<>(instance.getNodes().values());
         this.replacementPrefabs = new ArrayList<>(instance.getReplPrefabs());
     }
@@ -62,6 +71,8 @@ public class DungeonCodexMenu extends AbstractContainerMenu {
     public DungeonNode getNode(int index) { return nodes.get(index); }
 
     public int getNodeCount() { return nodes.size(); }
+
+    public List<ItemStack> getVaultStacks() { return vaultStacks; }
 
     public void setSelectedNodeIndex(int index) {
         this.selectedNodeIndex = index;
@@ -146,6 +157,29 @@ public class DungeonCodexMenu extends AbstractContainerMenu {
         } else {
             selectedReplacementPrefabIndex = Math.min(selectedReplacementPrefabIndex, replacementPrefabs.size() - 1);
         }
+    }
+
+    public void addReplacementEntryToNode(BlockPos nodePos, ReplacementEntry replacementEntry) {
+        DungeonNode node = nodes.stream()
+          .filter(n -> n.getPos().equals(nodePos))
+          .findFirst()
+          .orElse(null);
+        if (node == null) {
+            return;
+        }
+        node.addReplacement(replacementEntry);
+    }
+
+    public void removeReplacementEntryFromNode(BlockPos nodePos, int index) {
+        DungeonNode node = nodes.stream()
+          .filter(n -> n.getPos().equals(nodePos))
+          .findFirst()
+          .orElse(null);
+        if (node == null) {
+            return;
+        }
+        node.removeReplacement(index);
+        selectedReplacementIndex = 0;
     }
 
     // This may change based on the page context the menu is opened in

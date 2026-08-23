@@ -87,8 +87,16 @@ public class DungeonCodexItem extends BookItem {
             return InteractionResultHolder.fail(stack);
         }
         DungeonInstance instance = DungeonManager.getDungeon((ServerLevel) level, dungeonId);
+        ItemStackHandler handler = instance.getVaultInventory().getHandler();
+        List<ItemStack> vaultContents = new ArrayList<>();
+        for (int i = 0; i < handler.getSlots(); i++) {
+            ItemStack inSlot = handler.getStackInSlot(i);
+            if (!inSlot.isEmpty()) {
+                vaultContents.add(inSlot.copy());
+            }
+        }
         serverPlayer.openMenu(new SimpleMenuProvider((containerId, inventory, p) ->
-            new DungeonCodexMenu(containerId, inventory, dungeonId),
+            new DungeonCodexMenu(containerId, inventory, dungeonId, vaultContents),
             Component.translatable("menu.dungeon_diy.dungeon_codex")),
           buf -> {
               buf.writeUUID(dungeonId);
@@ -101,6 +109,10 @@ public class DungeonCodexItem extends BookItem {
               buf.writeInt(prefabs.size());
               for (ReplacementPrefab prefab : prefabs) {
                   prefab.writeNetworkData(buf);
+              }
+              buf.writeInt(vaultContents.size());
+              for (ItemStack vaultStack : vaultContents) {
+                  ItemStack.STREAM_CODEC.encode(buf, vaultStack);
               }
           }
         );

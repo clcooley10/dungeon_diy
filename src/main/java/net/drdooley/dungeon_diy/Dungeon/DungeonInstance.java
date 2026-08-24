@@ -2,9 +2,13 @@ package net.drdooley.dungeon_diy.Dungeon;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.*;
@@ -16,6 +20,7 @@ public class DungeonInstance {
     private final VaultInventory vaultInventory;
     private final Map<BlockPos, DungeonNode> nodes = new HashMap<>();
     private final List<ReplacementPrefab> replacementPrefabs = new ArrayList<>();
+    private NonNullList<ItemStack> acceptedPedestalStacks = NonNullList.create();
 
     public DungeonInstance(UUID id, Runnable markDirty) {
         this.id = id;
@@ -84,6 +89,9 @@ public class DungeonInstance {
         replacementPrefabs.removeIf(prefab -> prefab.name.equals(name));
     }
 
+    public NonNullList<ItemStack> getAcceptedPedestalStacks() { return acceptedPedestalStacks; }
+    public void setAcceptedPedestalStacks(NonNullList<ItemStack> acceptedPedestalStacks) { this.acceptedPedestalStacks = acceptedPedestalStacks; }
+
     public CompoundTag save(HolderLookup.Provider registries)  {
         CompoundTag tag = new CompoundTag();
         tag.putUUID("Id", id);
@@ -99,6 +107,7 @@ public class DungeonInstance {
             replacementList.add(replacementPrefab.save());
         }
         tag.put("ReplacementPrefabs", replacementList);
+        ContainerHelper.saveAllItems(tag, acceptedPedestalStacks, registries);
 
         return tag;
     }
@@ -117,6 +126,7 @@ public class DungeonInstance {
             ReplacementPrefab prefab =  ReplacementPrefab.load((CompoundTag) replTag, registries);
             instance.replacementPrefabs.add(prefab);
         }
+        ContainerHelper.loadAllItems(tag, instance.acceptedPedestalStacks, registries);
         return instance;
     }
 

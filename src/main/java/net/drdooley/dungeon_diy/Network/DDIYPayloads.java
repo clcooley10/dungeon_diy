@@ -27,6 +27,7 @@ public class DDIYPayloads {
         //    Export
         registrar.playToServer(ExportReplacementPrefabPayload.TYPE, ExportReplacementPrefabPayload.STREAM_CODEC, ExportReplacementPrefabPayload::handle);
         registrar.playToClient(SyncReplacementPrefabsPayload.TYPE, SyncReplacementPrefabsPayload.STREAM_CODEC, SyncReplacementPrefabsPayload::handle);
-
+        // Save Pedestal Settings
+        registrar.playToServer(SavePedestalSettingsPayload.TYPE, SavePedestalSettingsPayload.STREAM_CODEC, SavePedestalSettingsPayload::handle);
     }
 }

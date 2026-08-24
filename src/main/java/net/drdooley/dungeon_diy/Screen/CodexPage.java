@@ -23,6 +23,8 @@ public interface CodexPage {
 
     boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY);
 
+    boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY);
+
     boolean keyPressed(int keyCode, int scanCode, int modifiers);
 
     boolean charTyped(char c, int modifiers);

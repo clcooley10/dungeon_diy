@@ -6,6 +6,7 @@ import net.drdooley.dungeon_diy.Dungeon.*;
 import net.drdooley.dungeon_diy.Screen.DungeonCodexMenu;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -113,6 +114,11 @@ public class DungeonCodexItem extends BookItem {
               buf.writeInt(vaultContents.size());
               for (ItemStack vaultStack : vaultContents) {
                   ItemStack.STREAM_CODEC.encode(buf, vaultStack);
+              }
+              NonNullList<ItemStack> acceptedStacks = instance.getAcceptedPedestalStacks();
+              buf.writeInt(acceptedStacks.size());
+              for (ItemStack acceptedStack : acceptedStacks) {
+                  ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, acceptedStack);
               }
           }
         );

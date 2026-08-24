@@ -1,24 +1,15 @@
 package net.drdooley.dungeon_diy.Block;
 
-import net.drdooley.dungeon_diy.Dungeon.DungeonInstance;
-import net.drdooley.dungeon_diy.Dungeon.DungeonManager;
-import net.drdooley.dungeon_diy.Screen.AncientVaultMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class AncientPedestalBlockEntity extends BlockEntity implements MenuProvider {
+public class AncientPedestalBlockEntity extends BlockEntity {
     @Nullable
     private UUID dungeonId;
 
@@ -52,17 +43,5 @@ public class AncientPedestalBlockEntity extends BlockEntity implements MenuProvi
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         this.dungeonId = tag.getUUID("dungeonID");
-    }
-
-    @Override
-    public Component getDisplayName() {
-        return Component.translatable("menu.dungeon_diy.ancient_pedestal");
-    }
-
-    @Override
-    public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
-        DungeonInstance instance = DungeonManager.getDungeon((ServerLevel) player.level(), dungeonId);
-        if (instance == null) return null;
-        return new AncientVaultMenu(containerId, playerInventory, this);
     }
 }

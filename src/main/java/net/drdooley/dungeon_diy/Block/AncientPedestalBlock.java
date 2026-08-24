@@ -34,29 +34,18 @@ public class AncientPedestalBlock extends Block {
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (!level.isClientSide) {
+            // This will have to expand I think to allow other items to be placed on it
             if (!(stack.getItem() instanceof DungeonCodexItem)) {
                 return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             }
             ServerLevel world = (ServerLevel) level;
             UUID dungeonID = stack.get(DDIYDataComponents.DUNGEON_ID);
             BlockEntity clickedBE = world.getBlockEntity(pos);
-            if (!(clickedBE instanceof AncientPedestalBlockEntity) || dungeonID == null) {
+            if (!(clickedBE instanceof AncientPedestalBlockEntity pedestalBE) || dungeonID == null) {
                 return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             }
-            AncientPedestalBlockEntity pedestalBE = (AncientPedestalBlockEntity) clickedBE;
-
-            // Shift click -> Open menu to configure accepted inputs
-            if (player.isShiftKeyDown()) {
-                if (!pedestalBE.isBound()) {
-                    return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-                }
-                //
-            }
-            // Normal click -> link the dungeon
-            else {
-                pedestalBE.setDungeonId(dungeonID);
-                pedestalBE.setChanged();
-            }
+            pedestalBE.setDungeonId(dungeonID);
+            pedestalBE.setChanged();
         }
         return ItemInteractionResult.sidedSuccess(level.isClientSide);
     }

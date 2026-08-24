@@ -1,15 +1,18 @@
 package net.drdooley.dungeon_diy.Screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.drdooley.dungeon_diy.Block.DDIYBlocks;
 import net.drdooley.dungeon_diy.Dungeon.DungeonNode;
 import net.drdooley.dungeon_diy.Dungeon.ReplacementEntry;
 import net.drdooley.dungeon_diy.Dungeon.ReplacementPrefab;
 import net.drdooley.dungeon_diy.DungeonDIY;
 import net.drdooley.dungeon_diy.Network.*;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.CommonComponents;
@@ -18,8 +21,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.neoforged.api.distmarker.Dist;
@@ -36,6 +41,7 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
     private static final ResourceLocation IMPORT_EXPORT = ResourceLocation.fromNamespaceAndPath(DungeonDIY.MOD_ID,"textures/gui/dungeon_codex/import_export.png");
     private static final ResourceLocation PLUS_MINUS = ResourceLocation.fromNamespaceAndPath(DungeonDIY.MOD_ID,"textures/gui/dungeon_codex/plus_minus.png");
     private static final ResourceLocation BACK = ResourceLocation.fromNamespaceAndPath(DungeonDIY.MOD_ID,"textures/gui/dungeon_codex/back.png");
+    private static final ResourceLocation CHECK = ResourceLocation.fromNamespaceAndPath(DungeonDIY.MOD_ID,"textures/gui/dungeon_codex/checkmark.png");
 
     private static final int VISIBLE_SCROLL_BUTTONS = 7;
     private static final int SCALE_ARM_WIDTH = 9;
@@ -48,23 +54,32 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
     private final NodeViewEditPage  nodeViewEditPage;
     private final ImportReplPage  importReplPage;
     private final AddReplEntryPage addReplEntryPage;
+    private final PedestalEditPage pedestalEditPage;
 
     private final DungeonCodexMenu menu;
 
     public DungeonCodexScreen(DungeonCodexMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
-        this.imageWidth = 276;
         this.menu = menu;
 
         this.nodeViewEditPage = new NodeViewEditPage();
         this.importReplPage = new ImportReplPage();
         this.addReplEntryPage = new AddReplEntryPage();
+        this.pedestalEditPage = new PedestalEditPage();
 
         this.currentPage = nodeViewEditPage;
     }
 
     @Override
     protected void init() {
+        // These must be updated before super.init() to ensure the background renders properly
+        if (currentPage == nodeViewEditPage || currentPage == importReplPage || currentPage == addReplEntryPage) {
+            this.imageWidth = 276;
+            this.imageHeight = 166;
+        } else if(currentPage == pedestalEditPage) {
+            this.imageWidth = 176;
+            this.imageHeight = 222;
+        }
         super.init();
         currentPage.init();
     }
@@ -73,6 +88,7 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
         CodexPage newPage = switch (pageEnum) {
             case REPL_PREFAB_IMPORT -> importReplPage;
             case ADD_REPL_ENTRY -> addReplEntryPage;
+            case PEDESTAL_EDIT -> pedestalEditPage;
             default -> nodeViewEditPage;
         };
         setPage(newPage);
@@ -84,7 +100,8 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
             currentPage.removed();
         }
         currentPage = page;
-        currentPage.init();
+        menu.setActivePage(page.getPageEnum());
+        this.init();
     }
 
     @Override
@@ -119,6 +136,12 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         return currentPage.mouseScrolled(mouseX, mouseY, scrollX, scrollY)
           || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        // No fallback to super
+        return currentPage.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
     @Override
@@ -210,12 +233,17 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
         private static final int REMOVE_REPL_Y = 127;
         private static final int SQUARE_BUTTON_LENGTH = 14;
 
+        private static final int PEDESTAL_X = 255;
+        private static final int PEDESTAL_Y = 5;
+        private static final int PEDESTAL_W = 16;
+
         private boolean leftScaleHovered;
         private boolean rightScaleHovered;
         private boolean importHovered;
         private boolean exportHovered;
         private boolean addReplHovered;
         private boolean delReplHovered;
+        private boolean pedestalHovered;
 
         private EditBox prefabNameBox;
         private int selectedNodeIndex;
@@ -282,6 +310,7 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
             renderSelectedReplacement(graphics);
             renderScaleHover(graphics, leftScaleHovered, rightScaleHovered);
             renderSquareButtons(graphics);
+            renderPedestal(graphics);
         }
 
         @Override
@@ -304,6 +333,8 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
                 tooltip.add(Component.translatable("gui.dungeon_diy.dungeon_codex.add_repl_entry"));
             } else if (delReplHovered) {
                 tooltip.add(Component.translatable("gui.dungeon_diy.dungeon_codex.del_repl_entry"));
+            } else if (pedestalHovered) {
+                tooltip.add(Component.translatable("gui.dungeon_diy.dungeon_codex.configure_pedestal"));
             }
             if (!tooltip.isEmpty()) {
                 graphics.renderComponentTooltip(font, tooltip, mouseX, mouseY);
@@ -383,6 +414,12 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
                     menu.setSelectedReplacementIndex(index);
                     return true;
                 }
+                // Pedestal
+                if (pedestalHovered) {
+                    minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                    PacketDistributor.sendToServer(new ChangeDungeonCodexPagePayload(CodexPageEnum.PEDESTAL_EDIT));
+                    return true;
+                }
             }
             return false;
         }
@@ -397,6 +434,11 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
             }
             updateNodeButtons();
             return true;
+        }
+
+        @Override
+        public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+            return false;
         }
 
         @Override
@@ -500,6 +542,11 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
             graphics.drawCenteredString(font, weight, leftPos + SELECTED_WEIGHT_X, topPos + SELECTED_WEIGHT_Y, 0xFFFFFF);
         }
 
+        private void renderPedestal(GuiGraphics graphics) {
+            ItemStack stack = new ItemStack(DDIYBlocks.ANCIENT_PEDESTAL.get());
+            graphics.renderFakeItem(stack, leftPos + PEDESTAL_X, topPos + PEDESTAL_Y - 5);
+        }
+
         private int getReplacementSlot(double mouseX, double mouseY) {
             for (int i = 0; i < 27; i++) {
                 int row = i / REPLACEMENT_COLUMNS;
@@ -561,6 +608,7 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
             exportHovered = mouseX >= leftPos + EXPORT_REPL_PREFAB_X && mouseX < leftPos + EXPORT_REPL_PREFAB_X + SQUARE_BUTTON_LENGTH && mouseY >= topPos + EXPORT_REPL_PREFAB_Y && mouseY < topPos + EXPORT_REPL_PREFAB_Y + SQUARE_BUTTON_LENGTH;
             addReplHovered = mouseX >= leftPos + ADD_REPL_X && mouseX < leftPos + ADD_REPL_X + SQUARE_BUTTON_LENGTH && mouseY >= topPos + ADD_REPL_Y && mouseY < topPos + ADD_REPL_Y + SQUARE_BUTTON_LENGTH;
             delReplHovered = mouseX >= leftPos + REMOVE_REPL_X && mouseX < leftPos + REMOVE_REPL_X + SQUARE_BUTTON_LENGTH && mouseY >= topPos + REMOVE_REPL_Y && mouseY < topPos + REMOVE_REPL_Y + SQUARE_BUTTON_LENGTH;
+            pedestalHovered = mouseX >= leftPos + PEDESTAL_X && mouseX < leftPos + PEDESTAL_X + PEDESTAL_W && mouseY >= topPos + PEDESTAL_Y && mouseY < topPos + PEDESTAL_Y + PEDESTAL_W;
         }
 
         @OnlyIn(Dist.CLIENT)
@@ -744,6 +792,11 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
             }
             updatePrefabButtons();
             return true;
+        }
+
+        @Override
+        public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+            return false;
         }
 
         @Override
@@ -1040,6 +1093,7 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
                 if (backHovered) {
                     minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     setPage(nodeViewEditPage);
+                    return true;
                 }
             }
             return false;
@@ -1058,6 +1112,11 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
             }
             updateBSPropertyButtons();
             return true;
+        }
+
+        @Override
+        public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+            return false;
         }
 
         @Override
@@ -1164,7 +1223,6 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
         private <T extends Comparable<T>> void setPropertyValue(Property<T> property, Comparable<?> value) {
             editingState = editingState.setValue(property, property.getValueClass().cast(value));
         }
-
         @OnlyIn(Dist.CLIENT)
         class BSPropertyButton extends Button {
             final int index;
@@ -1221,6 +1279,128 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
                 String text = font.plainSubstrByWidth(property.getName() + ": " + currentValue.toString(), 84);
                 graphics.drawCenteredString(font, text, leftPos + CENTERED_SCROLL_BUTTON_X, getY() + 6, 0xFFFFFF);
             }
+        }
+    }
+
+    private class PedestalEditPage implements CodexPage {
+        private static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(DungeonDIY.MOD_ID, "textures/gui/dungeon_codex/temp_codex_menu_pedestal_edit.png");
+
+        private static final int BACK_BTN_X = 153;
+        private static final int BACK_BTN_Y = 9;
+        private static final int CHECK_BTN_X = 135;
+        private static final int CHECK_BTN_Y = 9;
+        private static final int SQUARE_BUTTON_LENGTH = 14;
+
+        private boolean backHovered;
+        private boolean checkHovered;
+
+        @Override
+        public CodexPageEnum getPageEnum() {
+            return CodexPageEnum.PEDESTAL_EDIT;
+        }
+
+        @Override
+        public void init() {
+        }
+
+        @Override
+        public void removed() {
+
+        }
+
+        @Override
+        public void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.setShaderTexture(0, BACKGROUND);
+
+            int x = (width - imageWidth) / 2;
+            int y = (height - imageHeight) / 2;
+            graphics.blit(BACKGROUND, x, y, 0, 0, imageWidth, imageHeight);
+            renderSquareButtons(graphics);
+        }
+
+        @Override
+        public void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+            graphics.drawString(font, Component.translatable("gui.dungeon_diy.dungeon_codex.title_pedestal_edit"), titleLabelX, titleLabelY, 4210752, false);
+        }
+
+        @Override
+        public void renderTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
+            List<Component> tooltip = new ArrayList<>();
+            if (backHovered) {
+                tooltip.add(Component.translatable("gui.dungeon_diy.dungeon_codex.back"));
+            } else if (checkHovered) {
+                tooltip.add(Component.translatable("gui.dungeon_diy.dungeon_codex.save_go_back"));
+            }
+            if (!tooltip.isEmpty()) {
+                graphics.renderComponentTooltip(font, tooltip, mouseX, mouseY);
+            }
+        }
+
+        @Override
+        public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+            updateHoverBools(mouseX, mouseY);
+            this.renderTooltip(graphics, mouseX, mouseY);
+        }
+
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (button == 0) {
+                // Go back / Save
+                if (backHovered) {
+                    minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                    setPage(nodeViewEditPage);
+                    return true;
+                }
+                if (checkHovered) {
+                    minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                    PacketDistributor.sendToServer(new SavePedestalSettingsPayload(menu.getDungeonId(), menu.getAcceptedPedestalItems()));
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+            return false;
+        }
+
+        @Override
+        public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+            return false;
+        }
+
+        @Override
+        public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+            return false;
+        }
+
+        @Override
+        public boolean charTyped(char c, int modifiers) {
+            return false;
+        }
+
+        @Override
+        public void tick() {
+        }
+
+        private void renderSquareButtons(GuiGraphics graphics) {
+            int u_offset = 0;
+            int v_offset = 0;
+
+            if (backHovered) { v_offset = SQUARE_BUTTON_LENGTH; }
+            graphics.blit(BACK, leftPos + BACK_BTN_X, topPos + BACK_BTN_Y, u_offset, v_offset, SQUARE_BUTTON_LENGTH, SQUARE_BUTTON_LENGTH, 14, 28);
+
+            v_offset = 0;
+            if (checkHovered) { v_offset = SQUARE_BUTTON_LENGTH; }
+            graphics.blit(CHECK, leftPos + CHECK_BTN_X, topPos + CHECK_BTN_Y, u_offset, v_offset, SQUARE_BUTTON_LENGTH, SQUARE_BUTTON_LENGTH, 14, 28);
+        }
+
+        private void updateHoverBools(int mouseX, int mouseY) {
+            backHovered = mouseX >= leftPos + BACK_BTN_X && mouseX < leftPos + BACK_BTN_X + SQUARE_BUTTON_LENGTH && mouseY >= topPos + BACK_BTN_Y && mouseY < topPos + BACK_BTN_Y + SQUARE_BUTTON_LENGTH;
+            checkHovered = mouseX >= leftPos + CHECK_BTN_X && mouseX < leftPos + CHECK_BTN_X + SQUARE_BUTTON_LENGTH && mouseY >= topPos + CHECK_BTN_Y && mouseY < topPos + CHECK_BTN_Y + SQUARE_BUTTON_LENGTH;
         }
     }
 }

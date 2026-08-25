@@ -49,6 +49,7 @@ public record AddReplacementEntryPayload(UUID dungeonId, BlockPos nodePos, Repla
             if (dungeon == null) return;
             DungeonNode node = dungeon.getNodes().get(payload.nodePos());
             if (node == null) return;
+            DungeonDIY.LOGGER.info("payload weight: " + payload.newEntry().getWeight() + " state: " + payload.newEntry().getState());
             node.addReplacement(payload.newEntry());
             dungeon.markDirty();
 

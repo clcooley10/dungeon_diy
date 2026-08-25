@@ -70,16 +70,16 @@ public class ReplacementEntry {
     }
 
     public void writeNetworkData(FriendlyByteBuf buf) {
-        buf.writeUtf(BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString());
+        buf.writeVarInt(Block.BLOCK_STATE_REGISTRY.getId(state));
         buf.writeInt(weight);
     }
 
 
     public static ReplacementEntry readNetworkData(FriendlyByteBuf buf) {
-        ResourceLocation id = ResourceLocation.parse(buf.readUtf());
-        Block block = BuiltInRegistries.BLOCK.get(id);
-        BlockState state = block.defaultBlockState();
+        int stateId = buf.readVarInt();
+        BlockState state = Block.BLOCK_STATE_REGISTRY.byId(stateId);
         int weight = buf.readInt();
+
         return new ReplacementEntry(state, weight);
     }
 }

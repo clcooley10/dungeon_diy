@@ -1,12 +1,14 @@
 package net.drdooley.dungeon_diy.Screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.math.Axis;
 import net.drdooley.dungeon_diy.Block.DDIYBlocks;
 import net.drdooley.dungeon_diy.Dungeon.DungeonNode;
 import net.drdooley.dungeon_diy.Dungeon.ReplacementEntry;
 import net.drdooley.dungeon_diy.Dungeon.ReplacementPrefab;
 import net.drdooley.dungeon_diy.DungeonDIY;
 import net.drdooley.dungeon_diy.Network.*;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -14,6 +16,10 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -198,6 +204,25 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
         }
         int y = topPos + SCALE_ARM_Y;
         graphics.blit(SCALE_ARMS, x, y, offset, 0, SCALE_ARM_WIDTH, SCALE_ARM_HEIGHT, 18, 18);
+    }
+
+    private void renderBlockState(GuiGraphics graphics, BlockState state, int x, int y) {
+        Minecraft minecraft = Minecraft.getInstance();
+        BlockRenderDispatcher blockRenderer = minecraft.getBlockRenderer();
+        MultiBufferSource.BufferSource bufferSource = minecraft.renderBuffers().bufferSource();
+
+        graphics.pose().pushPose();
+
+        graphics.pose().translate(x + 7, y + 18, 100);
+        graphics.pose().scale(10.0F, 10.0F, 10.0F);
+        graphics.pose().translate(-0.5F, -0.5F, -0.5F);
+        graphics.pose().mulPose(Axis.XP.rotationDegrees(210.0F));
+        graphics.pose().mulPose(Axis.YP.rotationDegrees(45.0F));
+
+        blockRenderer.renderSingleBlock(state, graphics.pose(), bufferSource, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+
+        graphics.pose().popPose();
+        bufferSource.endBatch();
     }
 
     /*****************************************************************
@@ -513,17 +538,32 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
 
                 boolean hovered = mouseX >= x && mouseX < x + REPLACEMENT_SLOT_SIZE && mouseY >= y && mouseY < y + REPLACEMENT_SLOT_SIZE;
 
-                // Highlight hovered fake slot
                 if (hovered) {
                     graphics.fill(x + 1, y + 1, x + REPLACEMENT_SLOT_SIZE - 1, y + REPLACEMENT_SLOT_SIZE - 1, 0x80FFFFFF);
+                    List<Component> tooltip = new ArrayList<>();
+                    if (i < replacements.size()) {
+                        ReplacementEntry entry = replacements.get(i);
+                        BlockState state = entry.getState();
+                        for (Property<?> prop : state.getProperties()) {
+                            tooltip.add(Component.literal(prop.getName() + ": " + state.getValue(prop)));
+                        }
+                    }
+                    if (!tooltip.isEmpty()) {
+                        graphics.renderComponentTooltip(font, tooltip, mouseX, mouseY);
+                    }
                 }
 
+                // Render blockstates instead of itemstacks
                 if (i < replacements.size()) {
                     ReplacementEntry entry = replacements.get(i);
-                    ItemStack stack = new ItemStack(entry.getState().getBlock().asItem());
-                    stack.setCount(entry.getWeight());
-                    graphics.renderFakeItem(stack, x + 1, y + 1);
-                    graphics.renderItemDecorations(font, stack, x + 1, y + 1);
+                    renderBlockState(graphics, entry.getState(), x, y);
+
+                    String weight = String.valueOf(entry.getWeight());
+                    int textWidth = font.width(weight);
+                    graphics.pose().pushPose();
+                    graphics.pose().translate(0, 0, 200);
+                    graphics.drawString(font, weight, x + 18 - textWidth, y + 10, 0xFFFFFFFF);
+                    graphics.pose().popPose();
                 }
             }
         }
@@ -536,8 +576,7 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
                 return;
             }
 
-            ItemStack stack = new ItemStack(selected.getState().getBlock().asItem());
-            graphics.renderFakeItem(stack, x + 1, y + 1);
+            renderBlockState(graphics, selected.getState(), x, y);
             String weight = String.valueOf(selected.getWeight());
             graphics.drawCenteredString(font, weight, leftPos + SELECTED_WEIGHT_X, topPos + SELECTED_WEIGHT_Y, 0xFFFFFF);
         }
@@ -840,17 +879,32 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
 
                 boolean hovered = mouseX >= x && mouseX < x + REPLACEMENT_SLOT_SIZE && mouseY >= y && mouseY < y + REPLACEMENT_SLOT_SIZE;
 
-                // Highlight hovered fake slot
                 if (hovered) {
                     graphics.fill(x + 1, y + 1, x + REPLACEMENT_SLOT_SIZE - 1, y + REPLACEMENT_SLOT_SIZE - 1, 0x80FFFFFF);
+                    List<Component> tooltip = new ArrayList<>();
+                    if (i < replacements.size()) {
+                        ReplacementEntry entry = replacements.get(i);
+                        BlockState state = entry.getState();
+                        for (Property<?> prop : state.getProperties()) {
+                            tooltip.add(Component.literal(prop.getName() + ": " + state.getValue(prop)));
+                        }
+                    }
+                    if (!tooltip.isEmpty()) {
+                        graphics.renderComponentTooltip(font, tooltip, mouseX, mouseY);
+                    }
                 }
 
+                // Render blockstates instead of itemstacks
                 if (i < replacements.size()) {
                     ReplacementEntry entry = replacements.get(i);
-                    ItemStack stack = new ItemStack(entry.getState().getBlock().asItem());
-                    stack.setCount(entry.getWeight());
-                    graphics.renderFakeItem(stack, x + 1, y + 1);
-                    graphics.renderItemDecorations(font, stack, x + 1, y + 1);
+                    renderBlockState(graphics, entry.getState(), x, y);
+
+                    String weight = String.valueOf(entry.getWeight());
+                    int textWidth = font.width(weight);
+                    graphics.pose().pushPose();
+                    graphics.pose().translate(0, 0, 200);
+                    graphics.drawString(font, weight, x + 18 - textWidth, y + 10, 0xFFFFFFFF);
+                    graphics.pose().popPose();
                 }
             }
         }
@@ -1086,6 +1140,9 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
                 // Add
                 if (addReplHovered) {
                     minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                    DungeonDIY.LOGGER.info(editingState.toString());
+                    ReplacementEntry entry = new ReplacementEntry(editingState, 1);
+                    DungeonDIY.LOGGER.info(entry.getState().toString());
                     PacketDistributor.sendToServer(new AddReplacementEntryPayload(menu.getDungeonId(), menu.getSelectedNode().getPos(), new ReplacementEntry(editingState, 1)));
                     return true;
                 }
@@ -1165,8 +1222,7 @@ public class DungeonCodexScreen extends AbstractContainerScreen<DungeonCodexMenu
 
         private void renderSelectedBlock(GuiGraphics graphics) {
             if (editingState == null) { return; }
-            ItemStack stack = new ItemStack(editingState.getBlock().asItem());
-            graphics.renderFakeItem(stack, leftPos + SELECTED_SLOT_X + 1, topPos + SELECTED_SLOT_Y + 1);
+            renderBlockState(graphics, editingState, leftPos + SELECTED_SLOT_X, topPos + SELECTED_SLOT_Y);
         }
 
         private int getClickedSlot(double mouseX, double mouseY) {

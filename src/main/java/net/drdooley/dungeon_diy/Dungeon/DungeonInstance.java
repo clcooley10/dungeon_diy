@@ -13,6 +13,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.*;
 
+import static net.drdooley.dungeon_diy.Screen.DungeonCodexMenu.PEDESTAL_SLOT_COUNT;
+
 public class DungeonInstance {
     private final UUID id;
     private int tick;
@@ -20,7 +22,7 @@ public class DungeonInstance {
     private final VaultInventory vaultInventory;
     private final Map<BlockPos, DungeonNode> nodes = new HashMap<>();
     private final List<ReplacementPrefab> replacementPrefabs = new ArrayList<>();
-    private NonNullList<ItemStack> acceptedPedestalStacks = NonNullList.create();
+    private NonNullList<ItemStack> acceptedPedestalStacks = NonNullList.withSize(PEDESTAL_SLOT_COUNT, ItemStack.EMPTY);
 
     public DungeonInstance(UUID id, Runnable markDirty) {
         this.id = id;
@@ -41,6 +43,10 @@ public class DungeonInstance {
     }
     public int getTick() {
         return tick;
+    }
+
+    public void generate() {
+
     }
 
     public Map<BlockPos, DungeonNode> getNodes() {
@@ -90,7 +96,10 @@ public class DungeonInstance {
     }
 
     public NonNullList<ItemStack> getAcceptedPedestalStacks() { return acceptedPedestalStacks; }
-    public void setAcceptedPedestalStacks(NonNullList<ItemStack> acceptedPedestalStacks) { this.acceptedPedestalStacks = acceptedPedestalStacks; }
+    public void setAcceptedPedestalStacks(NonNullList<ItemStack> acceptedPedestalStacks) {
+        this.acceptedPedestalStacks = acceptedPedestalStacks;
+        markDirty();
+    }
 
     public CompoundTag save(HolderLookup.Provider registries)  {
         CompoundTag tag = new CompoundTag();

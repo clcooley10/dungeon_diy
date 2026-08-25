@@ -57,7 +57,7 @@ public class AncientPedestalBlock extends BaseEntityBlock {
                             DungeonInstance instance = DungeonManager.getDungeon(world, pedestalBE.getDungeonId());
                             NonNullList<ItemStack> acceptedStacks = instance.getAcceptedPedestalStacks();
                             if (acceptedStacks.stream().anyMatch(acceptedStack -> acceptedStack.is(stack_orig.getItem()))) {
-                                instance.generate();
+                                instance.generate(world);
                             }
                         }
                     } else if (stack.isEmpty()) {

@@ -6,7 +6,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,6 +74,36 @@ public class DungeonNode {
             }
         }
         return new ItemStack(heavyEntry.getState().getBlock().asItem());
+    }
+
+    public BlockState generateState(RandomSource random, VaultInventory vault) {
+        List<ReplacementEntry> available = new ArrayList<>(replacements);
+        while (!available.isEmpty()) {
+            int totalWeight = 0;
+            for (ReplacementEntry entry : available) {
+                totalWeight += entry.getWeight();
+            }
+            if (totalWeight <= 0) {
+                return Blocks.AIR.defaultBlockState();
+            }
+            int roll = random.nextInt(totalWeight);
+            ReplacementEntry selected = null;
+            for (ReplacementEntry entry : available) {
+                roll -= entry.getWeight();
+                if (roll < 0) {
+                    selected = entry;
+                    break;
+                }
+            }
+
+            ItemStack required = new ItemStack(selected.getState().getBlock().asItem());
+            if (required.isEmpty() || vault.consumeItem(required)) {
+                return selected.getState();
+            }
+            available.remove(selected);
+        }
+
+        return Blocks.AIR.defaultBlockState();
     }
 
     public CompoundTag save() {

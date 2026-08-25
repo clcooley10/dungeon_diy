@@ -1,15 +1,23 @@
 package net.drdooley.dungeon_diy.Dungeon;
 
+import net.drdooley.dungeon_diy.DungeonDIY;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import java.util.*;
 
@@ -45,8 +53,33 @@ public class DungeonInstance {
         return tick;
     }
 
-    public void generate() {
+    public void removeExistingState(ServerLevel level) {
+        for (DungeonNode node : nodes.values()) {
+            BlockPos pos = node.getPos();
+            Block block = level.getBlockState(pos).getBlock();
+            if (block == Blocks.AIR) continue;
 
+            ItemStack blockStack = new ItemStack(block.asItem());
+            boolean dropBlock = false;
+            if (!blockStack.isEmpty()) {
+                ItemStack remainder = ItemHandlerHelper.insertItemStacked(vaultInventory.getHandler(), blockStack, false);
+                if (!remainder.isEmpty()) {
+                    dropBlock = true;
+                    DungeonDIY.LOGGER.warn("Failed to return '{}' to the Dungeon's Vault, dropped at {}", block, pos.toShortString());
+                }
+            }
+            level.destroyBlock(pos, dropBlock, null);
+        }
+    }
+
+    public void generate(ServerLevel level) {
+        removeExistingState(level);
+        RandomSource random = level.getRandom();
+        for (DungeonNode node : nodes.values()) {
+            BlockPos pos = node.getPos();
+            BlockState state = node.generateState(random, vaultInventory);
+            level.setBlockAndUpdate(pos, state);
+        }
     }
 
     public Map<BlockPos, DungeonNode> getNodes() {
